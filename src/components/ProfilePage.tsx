@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Settings, HelpCircle, LogOut, Bell, Shield } from "lucide-react";
+import { User, Settings, HelpCircle, LogOut, Bell, Shield, Edit, ChevronRight } from "lucide-react";
 
 const ProfilePage = () => {
   const profileMenuItems = [
@@ -15,7 +15,7 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
-      <div className="md:ml-64 pt-16 md:pt-0">
+      <div className="md:ml-64 pt-4 md:pt-0">
         <div className="bg-white rounded-t-3xl md:rounded-none min-h-screen md:mt-0 mt-4">
           <div className="container mx-auto px-4 py-6 max-w-2xl">
             {/* Header */}
@@ -25,7 +25,7 @@ const ProfilePage = () => {
             </div>
 
             {/* Profile Summary Card */}
-            <Card className="mb-6">
+            <Card className="mb-6 border border-gray-200 shadow-sm">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
@@ -36,7 +36,8 @@ const ProfilePage = () => {
                     <p className="text-gray-600">Porter Owner</p>
                     <p className="text-sm text-gray-500">john.doe@example.com</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="border-blue-200 text-blue-600 hover:bg-blue-50">
+                    <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </Button>
                 </div>
@@ -45,16 +46,16 @@ const ProfilePage = () => {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <Card>
+              <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold text-blue-600">10</div>
-                  <div className="text-sm text-gray-600">Total Vehicles</div>
+                  <div className="text-sm text-blue-700">Total Vehicles</div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="bg-green-50 border-green-200">
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold text-green-600">₹2.5L</div>
-                  <div className="text-sm text-gray-600">Monthly Earnings</div>
+                  <div className="text-sm text-green-700">Monthly Earnings</div>
                 </CardContent>
               </Card>
             </div>
@@ -62,11 +63,14 @@ const ProfilePage = () => {
             {/* Menu Items */}
             <div className="space-y-2 pb-20 md:pb-4">
               {profileMenuItems.map((item, index) => (
-                <Card key={index} className="cursor-pointer hover:shadow-md transition-shadow">
+                <Card 
+                  key={index} 
+                  className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.01] border border-gray-200"
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center gap-4">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        item.danger ? 'bg-red-100' : 'bg-gray-100'
+                        item.danger ? 'bg-red-50' : 'bg-gray-50'
                       }`}>
                         <item.icon className={`w-5 h-5 ${
                           item.danger ? 'text-red-600' : 'text-gray-600'
@@ -80,7 +84,7 @@ const ProfilePage = () => {
                         </div>
                         <div className="text-sm text-gray-500">{item.description}</div>
                       </div>
-                      <div className="text-gray-400">→</div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
                     </div>
                   </CardContent>
                 </Card>
