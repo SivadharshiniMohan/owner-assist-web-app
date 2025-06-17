@@ -59,7 +59,7 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
               variant="ghost"
               className={cn(
                 "flex flex-col items-center py-2 px-3 min-h-[60px] flex-1",
-                currentView === item.id ? "text-blue-600 bg-blue-50" : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                currentView === item.id ? "text-blue-600" : "text-gray-600 hover:text-blue-600"
               )}
               onClick={() => onViewChange(item.id)}
             >

@@ -1,95 +1,86 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Settings, HelpCircle, LogOut, Bell, Shield, Edit, ChevronRight } from "lucide-react";
+import { User, Phone, Mail, MapPin, Settings, LogOut } from "lucide-react";
 
 const ProfilePage = () => {
-  const profileMenuItems = [
-    { icon: User, label: "Personal Information", description: "Update your profile details" },
-    { icon: Bell, label: "Notifications", description: "Manage notification preferences" },
-    { icon: Shield, label: "Security", description: "Password and security settings" },
-    { icon: Settings, label: "Settings", description: "App preferences and configurations" },
-    { icon: HelpCircle, label: "Help & Support", description: "Get help and contact support" },
-    { icon: LogOut, label: "Logout", description: "Sign out of your account", danger: true },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
+    <div className="min-h-screen bg-white">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="bg-white rounded-t-3xl md:rounded-none min-h-screen md:mt-0 mt-4">
-          <div className="container mx-auto px-4 py-6 max-w-2xl">
-            {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Profile</h1>
-              <p className="text-gray-600">Manage your account and preferences</p>
-            </div>
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {/* Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Profile</h1>
+            <p className="text-gray-600">Manage your account settings</p>
+          </div>
 
-            {/* Profile Summary Card */}
-            <Card className="mb-6 border border-gray-200 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                    <User className="w-8 h-8 text-blue-600" />
+          {/* Profile Info */}
+          <Card className="mb-6">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
+                  <User className="w-10 h-10 text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">Rajesh Kumar</h2>
+                  <p className="text-gray-600">Fleet Owner</p>
+                  <p className="text-sm text-green-600">Verified Account</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Phone className="w-5 h-5 text-gray-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Phone Number</p>
+                    <p className="font-medium">+91 9876543210</p>
                   </div>
-                  <div className="flex-1">
-                    <h2 className="text-xl font-semibold text-gray-900">John Doe</h2>
-                    <p className="text-gray-600">Porter Owner</p>
-                    <p className="text-sm text-gray-500">john.doe@example.com</p>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Mail className="w-5 h-5 text-gray-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Email</p>
+                    <p className="font-medium">rajesh.kumar@email.com</p>
                   </div>
-                  <Button variant="outline" size="sm" className="border-blue-200 text-blue-600 hover:bg-blue-50">
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <MapPin className="w-5 h-5 text-gray-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Address</p>
+                    <p className="font-medium">New Delhi, India</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Menu Options */}
+          <div className="space-y-4 mb-20 md:mb-4">
+            <Card className="cursor-pointer hover:shadow-md transition-all duration-200">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Settings className="w-5 h-5 text-gray-600" />
+                    <span className="font-medium">Account Settings</span>
+                  </div>
+                  <div className="text-gray-400">→</div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <Card className="bg-blue-50 border-blue-200">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-600">10</div>
-                  <div className="text-sm text-blue-700">Total Vehicles</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-green-50 border-green-200">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-600">₹2.5L</div>
-                  <div className="text-sm text-green-700">Monthly Earnings</div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Menu Items */}
-            <div className="space-y-2 pb-20 md:pb-4">
-              {profileMenuItems.map((item, index) => (
-                <Card 
-                  key={index} 
-                  className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.01] border border-gray-200"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        item.danger ? 'bg-red-50' : 'bg-gray-50'
-                      }`}>
-                        <item.icon className={`w-5 h-5 ${
-                          item.danger ? 'text-red-600' : 'text-gray-600'
-                        }`} />
-                      </div>
-                      <div className="flex-1">
-                        <div className={`font-medium ${
-                          item.danger ? 'text-red-600' : 'text-gray-900'
-                        }`}>
-                          {item.label}
-                        </div>
-                        <div className="text-sm text-gray-500">{item.description}</div>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <Card className="cursor-pointer hover:shadow-md transition-all duration-200">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <LogOut className="w-5 h-5 text-red-600" />
+                    <span className="font-medium text-red-600">Logout</span>
+                  </div>
+                  <div className="text-gray-400">→</div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
