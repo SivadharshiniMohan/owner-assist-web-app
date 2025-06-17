@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import FleetPage from "@/components/FleetPage";
 import DriverDetailPage from "@/components/DriverDetailPage";
@@ -23,6 +23,7 @@ const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentView, setCurrentView] = useState("dashboard");
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   // Mock data
   const todayEarnings = "₹56,000.00";
@@ -46,19 +47,29 @@ const Index = () => {
               <div className="text-sm text-gray-600 mb-2">Today's Earnings</div>
               <div className="text-3xl font-bold mb-4">{todayEarnings}</div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center text-sm text-gray-500">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  {currentDate}
-                </div>
                 <button 
-                  onClick={() => setCurrentView("calendar")}
-                  className="text-blue-600 hover:text-blue-700 transition-colors"
+                  onClick={() => setShowCalendar(!showCalendar)}
+                  className="flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
                 >
-                  <Calendar className="w-5 h-5" />
+                  {currentDate}
+                  {showCalendar ? (
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  )}
                 </button>
               </div>
             </CardContent>
           </Card>
+
+          {/* Calendar View */}
+          {showCalendar && (
+            <Card className="mb-6">
+              <CardContent className="p-6">
+                <CalendarView onBack={() => setShowCalendar(false)} />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Fleet Overview */}
           <Card className="bg-white text-black rounded-2xl shadow-lg mb-20 md:mb-6">

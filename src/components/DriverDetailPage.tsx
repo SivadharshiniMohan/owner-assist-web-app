@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Phone, MapPin, Star, Clock, Truck, IndianRupee } from "lucide-react";
+import { ArrowLeft, MapPin, TrendingUp } from "lucide-react";
 
 interface Vehicle {
   id: number;
@@ -19,161 +19,104 @@ interface DriverDetailPageProps {
 }
 
 const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPageProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "ontrip": return "bg-blue-500";
-      case "online": return "bg-green-500";
-      case "offline": return "bg-gray-500";
-      default: return "bg-gray-500";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "ontrip": return "On Trip";
-      case "online": return "Online";
-      case "offline": return "Offline";
-      default: return "Unknown";
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
+    <div className="min-h-screen bg-gray-50">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="bg-white rounded-t-3xl md:rounded-none min-h-screen md:mt-0 mt-4">
-          <div className="container mx-auto px-4 py-6 max-w-4xl">
-            {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onBack}
-                className="p-2 hover:bg-gray-100"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Driver Details</h1>
-                <p className="text-gray-600">Vehicle and performance information</p>
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {/* Header */}
+          <div className="flex items-center gap-4 mb-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="text-gray-600 hover:text-blue-600"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Driver Info */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <div className="text-xl">🚛</div>
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">KA 51 AH 7654</h1>
+              <p className="text-sm text-gray-500">Tata Ace</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 text-gray-500 mb-6">
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm">4th block, Koramangala</span>
+          </div>
+
+          {/* Ledger Balance Card */}
+          <Card className="bg-gray-800 text-white rounded-2xl mb-6 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-2xl font-bold">₹549.86</div>
+                  <div className="text-sm text-gray-300">Ledger Balance</div>
+                </div>
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
+                  onClick={onViewLedger}
+                >
+                  Withdraw
+                </Button>
               </div>
-            </div>
-
-            {/* Driver Profile Card */}
-            <Card className="mb-6 border border-gray-200 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-lg">
-                      {vehicle.driverName.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-xl font-semibold text-gray-900">{vehicle.driverName}</h2>
-                    <p className="text-gray-600">{vehicle.vehicleNumber}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className={`w-2 h-2 rounded-full ${getStatusColor(vehicle.status)}`}></div>
-                      <span className="text-sm text-gray-600">{getStatusText(vehicle.status)}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-green-600">{vehicle.earnings}</div>
-                    <div className="text-sm text-gray-500">Today's Earnings</div>
-                  </div>
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
+                <span className="text-sm text-gray-300">Ledger Activity</span>
+                <div className="text-gray-400">
+                  →
                 </div>
-                
-                <div className="flex gap-2">
-                  <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
-                    <Phone className="w-4 h-4 mr-2" />
-                    Call Driver
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
-                    onClick={onViewLedger}
-                  >
-                    <IndianRupee className="w-4 h-4 mr-2" />
-                    View Ledger
-                  </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Today's Performance */}
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Today's Performance</h2>
+          </div>
+
+          <div className="flex gap-4">
+            {/* Earnings Card */}
+            <Card className="bg-blue-600 text-white rounded-2xl shadow-lg flex-1">
+              <CardContent className="p-6">
+                <div className="text-2xl font-bold mb-1">₹2,609.00</div>
+                <div className="text-sm text-blue-100 mb-4">Earnings</div>
+                <div className="absolute bottom-4 right-4">
+                  <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <Card className="bg-blue-50 border-blue-200">
+            {/* Stats */}
+            <div className="flex flex-col gap-4 flex-1">
+              <Card className="bg-white rounded-xl shadow-sm">
                 <CardContent className="p-4 text-center">
-                  <Star className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                  <div className="text-lg font-bold text-blue-600">4.8</div>
-                  <div className="text-sm text-blue-700">Rating</div>
+                  <div className="text-xl font-bold text-gray-900">8</div>
+                  <div className="text-sm text-gray-500">Completed</div>
                 </CardContent>
               </Card>
-              <Card className="bg-green-50 border-green-200">
+              
+              <Card className="bg-white rounded-xl shadow-sm">
                 <CardContent className="p-4 text-center">
-                  <Truck className="w-6 h-6 text-green-600 mx-auto mb-2" />
-                  <div className="text-lg font-bold text-green-600">23</div>
-                  <div className="text-sm text-green-700">Trips Today</div>
+                  <div className="text-xl font-bold text-gray-900">3</div>
+                  <div className="text-sm text-gray-500">Missed</div>
                 </CardContent>
               </Card>
-              <Card className="bg-purple-50 border-purple-200">
+              
+              <Card className="bg-white rounded-xl shadow-sm">
                 <CardContent className="p-4 text-center">
-                  <Clock className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-                  <div className="text-lg font-bold text-purple-600">8.5h</div>
-                  <div className="text-sm text-purple-700">Online Time</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-orange-50 border-orange-200">
-                <CardContent className="p-4 text-center">
-                  <MapPin className="w-6 h-6 text-orange-600 mx-auto mb-2" />
-                  <div className="text-lg font-bold text-orange-600">127km</div>
-                  <div className="text-sm text-orange-700">Distance</div>
+                  <div className="text-xl font-bold text-gray-900">1</div>
+                  <div className="text-sm text-gray-500">Cancelled</div>
                 </CardContent>
               </Card>
             </div>
-
-            {/* Location and Trip Info */}
-            <Card className="mb-6 border border-gray-200 shadow-sm">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Location</h3>
-                <div className="flex items-center gap-3 mb-4">
-                  <MapPin className="w-5 h-5 text-blue-600" />
-                  <span className="text-gray-700">{vehicle.location}</span>
-                </div>
-                <div className="bg-gray-100 rounded-lg h-32 flex items-center justify-center">
-                  <span className="text-gray-500">Map View (Integration Required)</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card className="mb-20 md:mb-6 border border-gray-200 shadow-sm">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-                <div className="space-y-4">
-                  {[
-                    { time: "2:30 PM", action: "Trip completed", location: "Connaught Place to Karol Bagh", amount: "+₹250" },
-                    { time: "1:45 PM", action: "Trip started", location: "Connaught Place", amount: "" },
-                    { time: "12:30 PM", action: "Trip completed", location: "India Gate to Connaught Place", amount: "+₹180" },
-                    { time: "11:15 AM", action: "Came online", location: "India Gate", amount: "" },
-                  ].map((activity, index) => (
-                    <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <div>
-                          <div className="font-medium text-gray-900">{activity.action}</div>
-                          <div className="text-sm text-gray-500">{activity.location}</div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        {activity.amount && (
-                          <div className="font-semibold text-green-600">{activity.amount}</div>
-                        )}
-                        <div className="text-sm text-gray-500">{activity.time}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
