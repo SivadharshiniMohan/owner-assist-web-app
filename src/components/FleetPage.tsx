@@ -48,44 +48,41 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-4xl">
-          {/* Filter Tabs */}
-          <div className="flex gap-2 mb-4 bg-white rounded-full p-1 shadow-sm">
+          {/* Filter Tabs - Updated to match ledger page style */}
+          <div className="flex gap-2 mb-6">
             <Button
-              variant={activeTab === "all" ? "default" : "ghost"}
-              className={cn(
-                "flex-1 rounded-full px-4 py-2 text-sm font-medium",
+              variant={activeTab === "all" ? "default" : "outline"}
+              className={`rounded-full px-6 ${
                 activeTab === "all" 
-                  ? "bg-gray-800 text-white hover:bg-gray-700 shadow-sm" 
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-              )}
+                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
               onClick={() => setActiveTab("all")}
             >
               All
             </Button>
             <Button
-              variant={activeTab === "ontrip" ? "default" : "ghost"}
-              className={cn(
-                "flex-1 rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2",
+              variant={activeTab === "ontrip" ? "default" : "outline"}
+              className={`rounded-full px-6 flex items-center gap-2 ${
                 activeTab === "ontrip" 
-                  ? "bg-gray-800 text-white hover:bg-gray-700 shadow-sm" 
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-              )}
+                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
               onClick={() => setActiveTab("ontrip")}
             >
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               On Trip ({vehicles.filter(v => v.status === 'ontrip').length})
             </Button>
             <Button
-              variant={activeTab === "online" ? "default" : "ghost"}
-              className={cn(
-                "flex-1 rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2",
+              variant={activeTab === "online" ? "default" : "outline"}
+              className={`rounded-full px-6 flex items-center gap-2 ${
                 activeTab === "online" 
-                  ? "bg-gray-800 text-white hover:bg-gray-700 shadow-sm" 
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-              )}
+                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
               onClick={() => setActiveTab("online")}
             >
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -98,33 +95,33 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
             {filteredVehicles.map((vehicle) => (
               <Card 
                 key={vehicle.id} 
-                className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white border-0 shadow-sm rounded-2xl"
+                className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white border border-gray-200 shadow-sm rounded-xl"
                 onClick={() => onVehicleSelect(vehicle)}
               >
                 <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3 flex-1">
-                      {/* Vehicle Image */}
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <rect x="4" y="12" width="24" height="12" rx="2" fill="#4B5563"/>
-                          <rect x="2" y="16" width="4" height="4" rx="2" fill="#374151"/>
-                          <rect x="26" y="16" width="4" height="4" rx="2" fill="#374151"/>
-                          <rect x="8" y="8" width="16" height="6" rx="1" fill="#6B7280"/>
-                          <circle cx="9" cy="26" r="3" fill="#1F2937"/>
-                          <circle cx="23" cy="26" r="3" fill="#1F2937"/>
-                          <circle cx="9" cy="26" r="1.5" fill="#9CA3AF"/>
-                          <circle cx="23" cy="26" r="1.5" fill="#9CA3AF"/>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-1">
+                      {/* Updated Vehicle Image */}
+                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="3" y="9" width="18" height="9" rx="1.5" fill="#4B5563"/>
+                          <rect x="1.5" y="12" width="3" height="3" rx="1.5" fill="#374151"/>
+                          <rect x="19.5" y="12" width="3" height="3" rx="1.5" fill="#374151"/>
+                          <rect x="6" y="6" width="12" height="4.5" rx="0.75" fill="#6B7280"/>
+                          <circle cx="6.75" cy="19.5" r="2.25" fill="#1F2937"/>
+                          <circle cx="17.25" cy="19.5" r="2.25" fill="#1F2937"/>
+                          <circle cx="6.75" cy="19.5" r="1.125" fill="#9CA3AF"/>
+                          <circle cx="17.25" cy="19.5" r="1.125" fill="#9CA3AF"/>
                         </svg>
                       </div>
                       
                       <div className="flex-1">
-                        <div className="flex items-start justify-between mb-1">
-                          <h3 className="font-semibold text-gray-900 text-base">{vehicle.driverName}</h3>
-                          <div className={`w-3 h-3 rounded-full ${getStatusColor(vehicle.status)}`}></div>
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-semibold text-gray-900 text-sm">{vehicle.driverName}</h3>
+                          <div className={`w-2 h-2 rounded-full ${getStatusColor(vehicle.status)}`}></div>
                         </div>
-                        <p className="text-sm text-gray-500 mb-2">{vehicle.vehicleNumber}</p>
-                        <div className="text-lg font-bold text-gray-900 mb-2">{vehicle.earnings}</div>
+                        <p className="text-xs text-gray-500 mb-2">{vehicle.vehicleNumber}</p>
+                        <div className="text-base font-bold text-gray-900 mb-1">{vehicle.earnings}</div>
                         <div className="flex items-center gap-1 text-gray-500">
                           <MapPin className="w-3 h-3" />
                           <span className="text-xs">{vehicle.location}</span>
@@ -133,8 +130,8 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                     </div>
                     
                     {/* Phone Icon */}
-                    <div className="ml-3 mt-1">
-                      <Phone className="w-5 h-5 text-gray-400" />
+                    <div className="ml-3">
+                      <Phone className="w-4 h-4 text-gray-400" />
                     </div>
                   </div>
                 </CardContent>

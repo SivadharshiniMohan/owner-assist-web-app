@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Filter } from "lucide-react";
 
 interface LedgerPageProps {
   onBack: () => void;
@@ -116,18 +116,18 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
     <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-4xl">
-          {/* Header */}
-          <div className="flex items-center gap-4 mb-6">
+          {/* Header with better alignment */}
+          <div className="flex items-center gap-3 mb-6">
             <Button
               variant="ghost"
               size="icon"
               onClick={onBack}
-              className="text-gray-600 hover:text-blue-600"
+              className="text-gray-600 hover:text-blue-600 h-8 w-8"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Ledger</h1>
+              <h1 className="text-lg font-semibold text-gray-900">Ledger</h1>
               <p className="text-sm text-gray-500">Balance: ₹500.00</p>
             </div>
           </div>
@@ -169,13 +169,11 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
             </Button>
           </div>
 
-          {/* Transactions Header */}
+          {/* Transactions Header with corrected filter icon */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Transactions (10)</h3>
-            <Button variant="ghost" size="icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M5 10h10M8 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Filter className="h-4 w-4 text-gray-600" />
             </Button>
           </div>
 
