@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Filter } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface LedgerPageProps {
   onBack: () => void;
@@ -18,7 +18,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
       time: "10:10 AM • Cash", 
       amount: "₹1,200.00", 
       positive: true,
-      icon: "🚗",
+      icon: "trip",
       color: "text-green-600"
     },
     { 
@@ -27,7 +27,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
       time: "09:00 PM • Online", 
       amount: "₹100.00", 
       positive: true,
-      icon: "🚗",
+      icon: "incentive",
       color: "text-green-600"
     },
     { 
@@ -36,7 +36,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
       time: "09:15 AM", 
       amount: "₹60.00", 
       positive: false,
-      icon: "🚗",
+      icon: "penalty",
       color: "text-red-600"
     },
     { 
@@ -45,7 +45,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
       time: "07:16 AM", 
       amount: "₹1,800.00", 
       positive: true,
-      icon: "✅",
+      icon: "recharge",
       color: "text-green-600"
     },
     { 
@@ -54,15 +54,68 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
       time: "06:30 PM", 
       amount: "₹600.00", 
       positive: false,
-      icon: "❌",
+      icon: "failed",
       color: "text-gray-400"
     },
   ];
 
+  const getTransactionIcon = (type: string) => {
+    switch (type) {
+      case "trip":
+        return (
+          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 8h12m-6-6l6 6-6 6" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        );
+      case "incentive":
+        return (
+          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1l2 6h5l-4 3 2 6-5-4-5 4 2-6-4-3h5z" fill="#10B981"/>
+            </svg>
+          </div>
+        );
+      case "penalty":
+        return (
+          <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" stroke="#EF4444" strokeWidth="2"/>
+              <path d="M5.5 5.5l5 5m0-5l-5 5" stroke="#EF4444" strokeWidth="2"/>
+            </svg>
+          </div>
+        );
+      case "recharge":
+        return (
+          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2v12m4-8l-4-4-4 4" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        );
+      case "failed":
+        return (
+          <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" stroke="#EF4444" strokeWidth="2"/>
+              <path d="M8 4v4m0 4h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">
+            💰
+          </div>
+        );
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="container mx-auto px-4 py-4 max-w-4xl">
           {/* Header */}
           <div className="flex items-center gap-4 mb-6">
             <Button
@@ -120,7 +173,9 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Transactions (10)</h3>
             <Button variant="ghost" size="icon">
-              <Filter className="h-4 w-4" />
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M5 10h10M8 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </Button>
           </div>
 
@@ -131,9 +186,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
             {transactions.map((transaction, index) => (
               <div key={transaction.id} className={`flex items-center justify-between py-4 ${index !== transactions.length - 1 ? 'border-b border-gray-100' : ''}`}>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">
-                    {transaction.icon}
-                  </div>
+                  {getTransactionIcon(transaction.icon)}
                   <div>
                     <div className="font-medium text-sm text-gray-900">{transaction.type}</div>
                     <div className="text-xs text-gray-500">{transaction.time}</div>

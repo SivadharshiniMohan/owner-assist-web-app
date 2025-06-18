@@ -9,6 +9,7 @@ import ProfilePage from "@/components/ProfilePage";
 import LoginPage from "@/components/LoginPage";
 import CalendarView from "@/components/CalendarView";
 import LedgerPage from "@/components/LedgerPage";
+import { format } from "date-fns";
 
 interface Vehicle {
   id: number;
@@ -24,10 +25,24 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("dashboard");
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  // Mock data
-  const todayEarnings = "₹56,000.00";
-  const currentDate = "Thu, 5 Sep 2024";
+  // Mock data for different dates
+  const dateEarnings: { [key: string]: string } = {
+    [format(new Date(), "yyyy-MM-dd")]: "₹56,000.00",
+    "2024-06-17": "₹42,500.00",
+    "2024-06-16": "₹38,200.00",
+    "2024-06-15": "₹51,800.00",
+    "2024-06-14": "₹47,300.00",
+  };
+
+  const getEarningsForDate = (date: Date) => {
+    const dateStr = format(date, "yyyy-MM-dd");
+    return dateEarnings[dateStr] || "₹0.00";
+  };
+
+  const currentEarnings = getEarningsForDate(selectedDate);
+  const currentDateString = format(selectedDate, "EEE, d MMM yyyy");
   
   const fleetData = {
     total: 10,
@@ -42,25 +57,72 @@ const Index = () => {
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-4xl">
           {/* Earnings Section */}
-          <div className="mb-4">
-            <div className="text-sm text-gray-600 mb-2">Today's Earnings</div>
-            <div className="text-4xl font-bold text-black mb-3">{todayEarnings}</div>
-            <div className="flex items-center gap-2">
+          <div className="mb-3">
+            <div className="text-sm text-gray-600 mb-1">Today's Earnings</div>
+            <div className="text-3xl font-bold text-black mb-2">{currentEarnings}</div>
+            <div className="flex items-center gap-2 mb-3">
               <button 
                 onClick={() => setShowCalendar(!showCalendar)}
                 className="flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
               >
                 <Calendar className="w-4 h-4 mr-2" />
-                {currentDate}
+                {currentDateString}
               </button>
             </div>
+            <hr className="border-gray-200 mb-4" />
           </div>
 
-          {/* Calendar View */}
+          {/* Calendar Overlay */}
           {showCalendar && (
             <Card className="mb-4 bg-white">
               <CardContent className="p-4">
-                <CalendarView onBack={() => setShowCalendar(false)} />
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Select Date</h3>
+                  <button 
+                    onClick={() => setShowCalendar(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="grid grid-cols-7 gap-2 text-center">
+                  {/* Simple calendar grid */}
+                  <div className="text-xs font-medium text-gray-500 py-2">Sun</div>
+                  <div className="text-xs font-medium text-gray-500 py-2">Mon</div>
+                  <div className="text-xs font-medium text-gray-500 py-2">Tue</div>
+                  <div className="text-xs font-medium text-gray-500 py-2">Wed</div>
+                  <div className="text-xs font-medium text-gray-500 py-2">Thu</div>
+                  <div className="text-xs font-medium text-gray-500 py-2">Fri</div>
+                  <div className="text-xs font-medium text-gray-500 py-2">Sat</div>
+                  
+                  {/* Calendar dates */}
+                  {Array.from({ length: 35 }, (_, i) => {
+                    const date = new Date(2024, 5, i - 5); // June 2024
+                    const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
+                    const isSelected = format(date, "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd");
+                    const hasEarnings = dateEarnings[format(date, "yyyy-MM-dd")];
+                    
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setSelectedDate(date);
+                          setShowCalendar(false);
+                        }}
+                        className={`
+                          w-8 h-8 text-sm rounded-full flex items-center justify-center
+                          ${isSelected ? 'bg-blue-600 text-white' : ''}
+                          ${isToday && !isSelected ? 'bg-blue-100 text-blue-600' : ''}
+                          ${hasEarnings && !isSelected && !isToday ? 'bg-green-100 text-green-600' : ''}
+                          ${!hasEarnings && !isSelected && !isToday ? 'text-gray-400' : ''}
+                          hover:bg-gray-100 transition-colors
+                        `}
+                      >
+                        {date.getDate()}
+                      </button>
+                    );
+                  })}
+                </div>
               </CardContent>
             </Card>
           )}
@@ -177,7 +239,7 @@ const Index = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full font-sans">
       <Sidebar currentView={currentView} onViewChange={setCurrentView} />
       {renderCurrentView()}
     </div>

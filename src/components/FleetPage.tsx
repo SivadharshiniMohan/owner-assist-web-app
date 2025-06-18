@@ -47,24 +47,19 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
     return false;
   });
 
-  const getTabCount = (tab: string) => {
-    if (tab === "all") return vehicles.length;
-    return vehicles.filter(v => v.status === tab).length;
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="container mx-auto px-4 py-4 max-w-4xl">
           {/* Filter Tabs */}
-          <div className="flex gap-1 mb-6 bg-white rounded-full p-1 shadow-sm">
+          <div className="flex gap-2 mb-4 bg-white rounded-full p-1 shadow-sm">
             <Button
               variant={activeTab === "all" ? "default" : "ghost"}
               className={cn(
-                "flex-1 rounded-full px-6 py-2 text-sm font-medium",
+                "flex-1 rounded-full px-4 py-2 text-sm font-medium",
                 activeTab === "all" 
-                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm" 
-                  : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                  ? "bg-gray-800 text-white hover:bg-gray-700 shadow-sm" 
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
               )}
               onClick={() => setActiveTab("all")}
             >
@@ -73,52 +68,63 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
             <Button
               variant={activeTab === "ontrip" ? "default" : "ghost"}
               className={cn(
-                "flex-1 rounded-full px-6 py-2 text-sm font-medium",
+                "flex-1 rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2",
                 activeTab === "ontrip" 
-                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm" 
-                  : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                  ? "bg-gray-800 text-white hover:bg-gray-700 shadow-sm" 
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
               )}
               onClick={() => setActiveTab("ontrip")}
             >
-              🔵 On Trip ({vehicles.filter(v => v.status === 'ontrip').length})
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              On Trip ({vehicles.filter(v => v.status === 'ontrip').length})
             </Button>
             <Button
               variant={activeTab === "online" ? "default" : "ghost"}
               className={cn(
-                "flex-1 rounded-full px-6 py-2 text-sm font-medium",
+                "flex-1 rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2",
                 activeTab === "online" 
-                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm" 
-                  : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                  ? "bg-gray-800 text-white hover:bg-gray-700 shadow-sm" 
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
               )}
               onClick={() => setActiveTab("online")}
             >
-              🟢 Online ({vehicles.filter(v => v.status === 'online').length})
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              Online ({vehicles.filter(v => v.status === 'online').length})
             </Button>
           </div>
 
           {/* Vehicle List */}
-          <div className="space-y-4 pb-20 md:pb-4">
+          <div className="space-y-3 pb-20 md:pb-4">
             {filteredVehicles.map((vehicle) => (
               <Card 
                 key={vehicle.id} 
-                className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white border-0 shadow-sm"
+                className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white border-0 shadow-sm rounded-2xl"
                 onClick={() => onVehicleSelect(vehicle)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3 flex-1">
-                      {/* Truck Icon */}
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mt-1">
-                        <div className="text-xl">🚛</div>
+                      {/* Vehicle Image */}
+                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="4" y="12" width="24" height="12" rx="2" fill="#4B5563"/>
+                          <rect x="2" y="16" width="4" height="4" rx="2" fill="#374151"/>
+                          <rect x="26" y="16" width="4" height="4" rx="2" fill="#374151"/>
+                          <rect x="8" y="8" width="16" height="6" rx="1" fill="#6B7280"/>
+                          <circle cx="9" cy="26" r="3" fill="#1F2937"/>
+                          <circle cx="23" cy="26" r="3" fill="#1F2937"/>
+                          <circle cx="9" cy="26" r="1.5" fill="#9CA3AF"/>
+                          <circle cx="23" cy="26" r="1.5" fill="#9CA3AF"/>
+                        </svg>
                       </div>
                       
                       <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-start justify-between mb-1">
                           <h3 className="font-semibold text-gray-900 text-base">{vehicle.driverName}</h3>
                           <div className={`w-3 h-3 rounded-full ${getStatusColor(vehicle.status)}`}></div>
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">{vehicle.vehicleNumber}</p>
-                        <div className="text-xl font-bold text-gray-900 mb-2">{vehicle.earnings}</div>
+                        <p className="text-sm text-gray-500 mb-2">{vehicle.vehicleNumber}</p>
+                        <div className="text-lg font-bold text-gray-900 mb-2">{vehicle.earnings}</div>
                         <div className="flex items-center gap-1 text-gray-500">
                           <MapPin className="w-3 h-3" />
                           <span className="text-xs">{vehicle.location}</span>
