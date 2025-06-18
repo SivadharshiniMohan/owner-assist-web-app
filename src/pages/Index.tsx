@@ -62,7 +62,7 @@ const Index = () => {
   const DashboardView = () => (
     <div className="min-h-screen bg-gray-50">
       <div className={`${getSidebarWidth()} pt-4 md:pt-0`}>
-        <div className="container mx-auto px-4 py-4 max-w-4xl">
+        <div className="container mx-auto px-4 py-4 max-w-2xl">
           {/* Earnings Section */}
           <div className="mb-3">
             <div className="text-sm text-gray-600 mb-1">Today's Earnings</div>
