@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 
 interface Vehicle {
@@ -23,13 +24,29 @@ interface FleetPageProps {
 const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   const [activeTab, setActiveTab] = useState("all");
 
-  const vehicles: Vehicle[] = [
-    { id: 1, driverName: "Driver name", vehicleNumber: "XX 00 ZZ 0000", earnings: "₹00,000.00", location: "4th block, Koramangala", status: "ontrip", rating: 4.8, phone: "+91 9876543210" },
-    { id: 2, driverName: "Driver name", vehicleNumber: "XX 00 ZZ 0000", earnings: "₹00,000.00", location: "4th block, Koramangala", status: "online", rating: 4.5, phone: "+91 9876543211" },
-    { id: 3, driverName: "Driver name", vehicleNumber: "XX 00 ZZ 0000", earnings: "₹00,000.00", location: "4th block, Koramangala", status: "offline", rating: 4.2, phone: "+91 9876543212" },
-    { id: 4, driverName: "Driver name", vehicleNumber: "XX 00 ZZ 0000", earnings: "₹00,000.00", location: "4th block, Koramangala", status: "ontrip", rating: 4.9, phone: "+91 9876543213" },
-    { id: 5, driverName: "Driver name", vehicleNumber: "XX 00 ZZ 0000", earnings: "₹00,000.00", location: "4th block, Koramangala", status: "online", rating: 4.3, phone: "+91 9876543214" },
-  ];
+  const { data: fleetList, isLoading } = useQuery({
+    queryKey: ['fleetList', activeTab],
+    queryFn: async () => {
+      const response = await fetch(`https://book.ecargo.co.in/v2/oa/stats/fleetList?oaId=13&filterBy=${activeTab}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch fleet list');
+      }
+      const data = await response.json();
+      return data.data || [];
+    },
+  });
+
+  // Transform API data to match our interface
+  const vehicles: Vehicle[] = fleetList?.map((item: any, index: number) => ({
+    id: item.driverId || index,
+    driverName: item.driverName || "Driver name",
+    vehicleNumber: item.vehicleNumber || "XX 00 ZZ 0000",
+    earnings: `₹${item.earnings || "00,000.00"}`,
+    location: item.location || "4th block, Koramangala",
+    status: item.status?.toLowerCase() || "offline",
+    rating: item.rating || 4.5,
+    phone: item.phoneNumber || "+91 9876543210"
+  })) || [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -40,18 +57,26 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
     }
   };
 
-  const filteredVehicles = vehicles.filter(vehicle => {
-    if (activeTab === "all") return true;
-    if (activeTab === "ontrip") return vehicle.status === "ontrip";
-    if (activeTab === "online") return vehicle.status === "online";
-    if (activeTab === "offline") return vehicle.status === "offline";
-    return false;
-  });
+  const filteredVehicles = vehicles;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
+        <div className="md:ml-64 pt-4 md:pt-0">
+          <div className="container mx-auto px-4 py-4 max-w-8xl">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-gray-500">Loading fleet data...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="container mx-auto px-4 py-4 max-w-7xl">
+        <div className="container mx-auto px-4 py-4 max-w-8xl">
           {/* Filter Tabs */}
           <div className="flex gap-2 mb-6">
             <Button
@@ -66,13 +91,13 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
               All
             </Button>
             <Button
-              variant={activeTab === "ontrip" ? "default" : "outline"}
+              variant={activeTab === "onTrip" ? "default" : "outline"}
               className={`rounded-full px-6 flex items-center gap-2 ${
-                activeTab === "ontrip" 
+                activeTab === "onTrip" 
                   ? "bg-blue-900 text-white hover:bg-blue-800" 
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
               }`}
-              onClick={() => setActiveTab("ontrip")}
+              onClick={() => setActiveTab("onTrip")}
             >
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               On Trip ({vehicles.filter(v => v.status === 'ontrip').length})
@@ -105,7 +130,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
 
           {/* Vehicle List */}
           <div className="space-y-3 pb-20 md:pb-4">
-            {filteredVehicles.map((vehicle) => (
+            {filteredVehicles.length > 0 ? filteredVehicles.map((vehicle) => (
               <Card 
                 key={vehicle.id} 
                 className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white border border-gray-200 shadow-sm rounded-xl"
@@ -149,7 +174,11 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            )) : (
+              <div className="text-center py-8 text-gray-500">
+                No vehicles found for the selected filter
+              </div>
+            )}
           </div>
         </div>
       </div>

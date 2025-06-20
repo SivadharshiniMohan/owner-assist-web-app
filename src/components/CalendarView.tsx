@@ -31,7 +31,7 @@ const CalendarView = ({ onBack }: CalendarViewProps) => {
   return (
     <div className="min-h-screen bg-white">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="container mx-auto px-4 py-6 max-w-8xl">
           {/* Header */}
           <div className="flex items-center gap-4 mb-6">
             <Button

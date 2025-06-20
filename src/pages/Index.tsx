@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, ChevronRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/Sidebar";
 import FleetPage from "@/components/FleetPage";
 import DriverDetailPage from "@/components/DriverDetailPage";
@@ -9,6 +10,7 @@ import ProfilePage from "@/components/ProfilePage";
 import LoginPage from "@/components/LoginPage";
 import CalendarView from "@/components/CalendarView";
 import LedgerPage from "@/components/LedgerPage";
+import RevenueChart from "@/components/RevenueChart";
 import { format } from "date-fns";
 
 interface Vehicle {
@@ -20,12 +22,33 @@ interface Vehicle {
   status: "ontrip" | "online" | "offline";
 }
 
+interface FleetStats {
+  total: number;
+  onTrip: number;
+  online: number;
+  offline: number;
+  suspended: number;
+}
+
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentView, setCurrentView] = useState("dashboard");
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  // Fetch fleet status
+  const { data: fleetStats } = useQuery({
+    queryKey: ['fleetStatus'],
+    queryFn: async () => {
+      const response = await fetch('https://book.ecargo.co.in/v2/oa/stats/fleetStatus?oaId=13');
+      if (!response.ok) {
+        throw new Error('Failed to fetch fleet status');
+      }
+      const data = await response.json();
+      return data.data || { total: 0, onTrip: 0, online: 0, offline: 0, suspended: 0 };
+    },
+  });
 
   // Mock data for different dates
   const dateEarnings: { [key: string]: string } = {
@@ -44,7 +67,7 @@ const Index = () => {
   const currentEarnings = getEarningsForDate(selectedDate);
   const currentDateString = format(selectedDate, "EEE, d MMM yyyy");
   
-  const fleetData = {
+  const fleetData = fleetStats || {
     total: 10,
     onTrip: 4,
     online: 3,
@@ -55,7 +78,7 @@ const Index = () => {
   const DashboardView = () => (
     <div className="min-h-screen bg-gray-50">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="container mx-auto px-4 py-4 max-w-7xl">
+        <div className="container mx-auto px-4 py-4 max-w-8xl">
           {/* Earnings Section */}
           <div className="mb-3">
             <div className="text-sm text-gray-600 mb-1">Today's Earnings</div>
@@ -74,10 +97,15 @@ const Index = () => {
 
           {/* Calendar Overlay */}
           {showCalendar && (
-            <Card className="mb-4 bg-white">
+            <Card className="mb-4 bg-white relative z-50">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Select Date</h3>
+                  <div>
+                    <h3 className="text-lg font-semibold">Select Date</h3>
+                    <div className="text-sm text-gray-600">
+                      Selected: {format(selectedDate, "dd MMM yyyy")} - {getEarningsForDate(selectedDate)}
+                    </div>
+                  </div>
                   <button 
                     onClick={() => setShowCalendar(false)}
                     className="text-gray-500 hover:text-gray-700"
@@ -143,7 +171,7 @@ const Index = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-blue-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.onTrip}<span className="text-sm font-normal opacity-90">/10</span></div>
+                    <div className="text-2xl font-bold">{fleetData.onTrip}<span className="text-sm font-normal opacity-90">/{fleetData.total}</span></div>
                     <div className="text-sm mt-1">On Trip</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
@@ -156,7 +184,7 @@ const Index = () => {
                 
                 <div className="bg-green-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.online}<span className="text-sm font-normal opacity-90">/10</span></div>
+                    <div className="text-2xl font-bold">{fleetData.online}<span className="text-sm font-normal opacity-90">/{fleetData.total}</span></div>
                     <div className="text-sm mt-1">Online</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
@@ -169,7 +197,7 @@ const Index = () => {
                 
                 <div className="bg-gray-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.offline}<span className="text-sm font-normal opacity-90">/10</span></div>
+                    <div className="text-2xl font-bold">{fleetData.offline}<span className="text-sm font-normal opacity-90">/{fleetData.total}</span></div>
                     <div className="text-sm mt-1">Offline</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
@@ -182,7 +210,7 @@ const Index = () => {
                 
                 <div className="bg-red-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.suspended}<span className="text-sm font-normal opacity-90">/10</span></div>
+                    <div className="text-2xl font-bold">{fleetData.suspended}<span className="text-sm font-normal opacity-90">/{fleetData.total}</span></div>
                     <div className="text-sm mt-1">Suspended</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
@@ -195,6 +223,9 @@ const Index = () => {
               </div>
             </div>
           </div>
+
+          {/* Revenue Chart */}
+          <RevenueChart />
         </div>
       </div>
     </div>
