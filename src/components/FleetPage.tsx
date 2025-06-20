@@ -50,7 +50,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   return (
     <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="container mx-auto px-4 py-4 max-w-4xl">
+        <div className="container mx-auto px-4 py-4 max-w-6xl">
           {/* Filter Tabs - Updated to match ledger page style */}
           <div className="flex gap-2 mb-6">
             <Button
@@ -101,7 +101,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 flex-1">
-                      {/* Updated Vehicle Image */}
+                      {/* Vehicle Image */}
                       <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <rect x="3" y="9" width="18" height="9" rx="1.5" fill="#4B5563"/>
@@ -117,21 +117,21 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                       
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-semibold text-gray-900 text-sm">{vehicle.driverName}</h3>
-                          <div className={`w-2 h-2 rounded-full ${getStatusColor(vehicle.status)}`}></div>
+                          <h3 className="font-semibold text-gray-900 text-base">{vehicle.driverName}</h3>
+                          <div className={`w-3 h-3 rounded-full ${getStatusColor(vehicle.status)}`}></div>
                         </div>
-                        <p className="text-xs text-gray-500 mb-2">{vehicle.vehicleNumber}</p>
-                        <div className="text-base font-bold text-gray-900 mb-1">{vehicle.earnings}</div>
+                        <p className="text-sm text-gray-500 mb-2">{vehicle.vehicleNumber}</p>
+                        <div className="text-lg font-bold text-gray-900 mb-2">{vehicle.earnings}</div>
                         <div className="flex items-center gap-1 text-gray-500">
-                          <MapPin className="w-3 h-3" />
-                          <span className="text-xs">{vehicle.location}</span>
+                          <MapPin className="w-4 h-4" />
+                          <span className="text-sm">{vehicle.location}</span>
                         </div>
                       </div>
                     </div>
                     
                     {/* Phone Icon */}
                     <div className="ml-3">
-                      <Phone className="w-4 h-4 text-gray-400" />
+                      <Phone className="w-5 h-5 text-gray-400" />
                     </div>
                   </div>
                 </CardContent>
