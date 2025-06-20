@@ -10,12 +10,13 @@ interface LedgerPageProps {
 }
 
 interface WalletTransaction {
-  id: number;
-  txnType: string;
-  amount: number;
-  created: string;
-  status: string;
-  description?: string;
+  TRANSACTION_ID: number;
+  TRANSACTION_TYPE: string;
+  AMOUNT: number;
+  CREATED_TIME: string;
+  DESCRIPTION?: string;
+  TRIP_ID?: number;
+  DRIVER_ID: number;
 }
 
 const LedgerPage = ({ onBack }: LedgerPageProps) => {
@@ -34,6 +35,8 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
   });
 
   const getTransactionIcon = (type: string) => {
+    if (!type) return getDefaultIcon();
+    
     const lowerType = type.toLowerCase();
     
     if (lowerType.includes('trip') || lowerType.includes('earning')) {
@@ -77,14 +80,18 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
       );
     }
     
-    return (
-      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">
-        💰
-      </div>
-    );
+    return getDefaultIcon();
   };
 
+  const getDefaultIcon = () => (
+    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">
+      💰
+    </div>
+  );
+
   const formatTime = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    
     try {
       const date = new Date(dateString);
       return date.toLocaleTimeString('en-IN', { 
@@ -98,6 +105,8 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
   };
 
   const isPositiveTransaction = (type: string, amount: number) => {
+    if (!type) return amount > 0;
+    
     const lowerType = type.toLowerCase();
     if (lowerType.includes('penalty') || lowerType.includes('deduct')) {
       return false;
@@ -204,18 +213,18 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
           <div className="space-y-0">
             {transactions && transactions.length > 0 ? (
               transactions.map((transaction: WalletTransaction, index: number) => {
-                const isPositive = isPositiveTransaction(transaction.txnType, transaction.amount);
+                const isPositive = isPositiveTransaction(transaction.TRANSACTION_TYPE, transaction.AMOUNT);
                 return (
-                  <div key={transaction.id} className={`flex items-center justify-between py-4 ${index !== transactions.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                  <div key={transaction.TRANSACTION_ID} className={`flex items-center justify-between py-4 ${index !== transactions.length - 1 ? 'border-b border-gray-100' : ''}`}>
                     <div className="flex items-center gap-3">
-                      {getTransactionIcon(transaction.txnType)}
+                      {getTransactionIcon(transaction.TRANSACTION_TYPE)}
                       <div>
-                        <div className="font-medium text-sm text-gray-900">{transaction.txnType}</div>
-                        <div className="text-xs text-gray-500">{formatTime(transaction.created)}</div>
+                        <div className="font-medium text-sm text-gray-900">{transaction.TRANSACTION_TYPE || 'Unknown Transaction'}</div>
+                        <div className="text-xs text-gray-500">{formatTime(transaction.CREATED_TIME)}</div>
                       </div>
                     </div>
                     <div className={`font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                      {isPositive ? '' : '- '}₹{Math.abs(transaction.amount).toFixed(2)}
+                      {isPositive ? '' : '- '}₹{Math.abs(transaction.AMOUNT || 0).toFixed(2)}
                     </div>
                   </div>
                 );
