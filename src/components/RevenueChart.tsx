@@ -1,55 +1,103 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import { useRevenue } from "../hooks/useRevenue";
-import { format, subDays } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 const RevenueChart = () => {
-  const endDate = format(new Date(), "yyyy-MM-dd");
-  const startDate = format(subDays(new Date(), 19), "yyyy-MM-dd");
-  
-  const { data: revenueData = [], isLoading } = useRevenue(startDate, endDate);
+  const { data: revenueData, isLoading } = useQuery({
+    queryKey: ['revenue'],
+    queryFn: async () => {
+      const response = await fetch('https://book.ecargo.co.in/v2/admin/stats/revenue?startDate=2025-06-01&endDate=2025-06-20&zones=1%2C2%2C3');
+      if (!response.ok) {
+        throw new Error('Failed to fetch revenue data');
+      }
+      const data = await response.json();
+      return data.data || [];
+    },
+  });
 
-  const chartData = revenueData.map((item: any) => ({
-    date: format(new Date(item.date), "dd/MM"),
-    revenue: item.count
-  }));
+  // Transform data for chart
+  const chartData = revenueData?.map((item: any) => ({
+    date: new Date(item.date).toLocaleDateString('en-IN', { 
+      month: 'short', 
+      day: 'numeric' 
+    }),
+    revenue: item.revenue || 0
+  })) || [];
+
+  const chartConfig = {
+    revenue: {
+      label: "Daily Revenue",
+      color: "hsl(var(--chart-1))",
+    },
+  };
 
   if (isLoading) {
     return (
-      <Card className="bg-white rounded-2xl shadow-sm">
-        <CardContent className="p-6">
-          <div className="text-center py-8 text-gray-500">Loading chart...</div>
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>Trips Revenue Trend</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 flex items-center justify-center">
+            <div className="text-gray-500">Loading chart...</div>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-white rounded-2xl shadow-sm">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Revenue Analytics</h2>
-            <p className="text-sm text-gray-500">Last 20 days performance</p>
-          </div>
-        </div>
-        
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <X isAxis dataKey="date" axisLine={false} tickLine={false} />
-              <YAxis axisLine={false} tickLine={false} />
-              <Line 
-                type="monotone" 
-                dataKey="revenue" 
-                stroke="#3B82F6" 
-                strokeWidth={2}
-                dot={{ fill: '#3B82F6', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+    <Card className="mb-4">
+      <CardHeader>
+        <CardTitle>Trips Revenue Trend</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig} className="h-64 w-full">
+          <AreaChart data={chartData}>
+            <defs>
+              <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-revenue)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-revenue)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+            <XAxis 
+              dataKey="date" 
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => value}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => `₹${value.toLocaleString()}`}
+            />
+            <ChartTooltip 
+              content={<ChartTooltipContent 
+                formatter={(value) => [`₹${value.toLocaleString()}`, "Daily Revenue"]}
+              />} 
+            />
+            <Area
+              dataKey="revenue"
+              type="monotone"
+              fill="url(#fillRevenue)"
+              fillOpacity={0.4}
+              stroke="var(--color-revenue)"
+              strokeWidth={2}
+            />
+          </AreaChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

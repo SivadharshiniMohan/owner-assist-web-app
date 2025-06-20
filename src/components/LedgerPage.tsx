@@ -1,13 +1,24 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { ArrowLeft, Filter, ChevronLeft, ChevronRight } from "lucide-react";
-import { useWalletTransactions, WalletTransaction } from "../hooks/useWalletTransactions";
+import { useQuery } from "@tanstack/react-query";
 import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
 
 interface LedgerPageProps {
   onBack: () => void;
+}
+
+interface WalletTransaction {
+  TRANSACTION_ID: number;
+  TRANSACTION_TYPE: string;
+  AMOUNT: number;
+  CREATED_TIME: string;
+  DESCRIPTION?: string;
+  TRIP_ID?: number;
+  DRIVER_ID: number;
 }
 
 const LedgerPage = ({ onBack }: LedgerPageProps) => {
@@ -17,7 +28,20 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
 
-  const { data: transactionData, isLoading, error } = useWalletTransactions(1, currentPage, pageSize);
+  const { data: transactionData, isLoading, error } = useQuery({
+    queryKey: ['walletTransactions', activeTab, customDate, currentPage, pageSize],
+    queryFn: async () => {
+      const response = await fetch(`https://book.ecargo.co.in/v2/driver/walletTxns?id=1&pageNo=${currentPage}&pageSize=${pageSize}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+      const data = await response.json();
+      return {
+        transactions: data.data || [],
+        totalCount: data.total_count || 0
+      };
+    },
+  });
 
   const getTransactionIcon = (type: string) => {
     if (!type) return getDefaultIcon();

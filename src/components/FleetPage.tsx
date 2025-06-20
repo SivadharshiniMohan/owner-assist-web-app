@@ -2,42 +2,80 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin, Phone } from "lucide-react";
-import { useFleetList, Vehicle } from "../hooks/useFleetList";
+import { MapPin, Phone } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+
+interface Vehicle {
+  id: number;
+  driverName: string;
+  vehicleNumber: string;
+  earnings: string;
+  location: string;
+  status: "ontrip" | "online" | "offline";
+  rating: number;
+  phone: string;
+}
 
 interface FleetPageProps {
-  onVehicleSelect: (vehicle: any) => void;
+  onVehicleSelect: (vehicle: Vehicle) => void;
 }
 
 const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
-  const [filterBy, setFilterBy] = useState("all");
-  
-  const { data: vehicles = [], isLoading } = useFleetList(13, filterBy);
+  const [activeTab, setActiveTab] = useState("all");
+
+  const { data: fleetList, isLoading } = useQuery({
+    queryKey: ['fleetList', activeTab],
+    queryFn: async () => {
+      const filterParam = activeTab === "onTrip" ? "onTrip" : activeTab;
+      const response = await fetch(`https://book.ecargo.co.in/v2/oa/stats/fleetList?oaId=13&filterBy=${filterParam}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch fleet list');
+      }
+      const data = await response.json();
+      return data.data || [];
+    },
+  });
+
+  // Transform API data to match our interface
+  const vehicles: Vehicle[] = fleetList?.map((item: any) => ({
+    id: item.driverId || 0,
+    driverName: item.name || "Driver name",
+    vehicleNumber: item.vehicleNumber || "XX 00 ZZ 0000",
+    earnings: `₹${Math.floor(Math.random() * 50000) + 10000}.00`, // Mock earnings since not in API
+    location: "4th block, Koramangala", // Mock location since not in API
+    status: item.status?.toLowerCase() === "ontrip" ? "ontrip" : 
+            item.status?.toLowerCase() === "online" ? "online" : "offline",
+    rating: 4.5, // Mock rating since not in API
+    phone: "+91 9876543210" // Mock phone since not in API
+  })) || [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "onTrip": return "bg-blue-500";
+      case "ontrip": return "bg-blue-500";
       case "online": return "bg-green-500";
-      case "offline": return "bg-gray-500";
-      default: return "bg-gray-500";
+      case "offline": return "bg-gray-400";
+      default: return "bg-gray-400";
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "onTrip": return "On Trip";
-      case "online": return "Online";  
-      case "offline": return "Offline";
-      default: return "Unknown";
-    }
+  const getFilteredVehicles = () => {
+    if (activeTab === "all") return vehicles;
+    return vehicles.filter(vehicle => {
+      if (activeTab === "onTrip") return vehicle.status === "ontrip";
+      return vehicle.status === activeTab;
+    });
   };
+
+  const filteredVehicles = getFilteredVehicles();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white font-sans">
         <div className="md:ml-64 pt-4 md:pt-0">
           <div className="container mx-auto px-4 py-4 max-w-8xl">
-            <div className="text-center py-8">Loading fleet...</div>
+            <div className="flex items-center justify-center h-64">
+              <div className="text-gray-500">Loading fleet data...</div>
+            </div>
           </div>
         </div>
       </div>
@@ -45,80 +83,112 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-8xl">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">My Fleet</h1>
-          </div>
-
           {/* Filter Tabs */}
-          <div className="flex gap-2 mb-6 overflow-x-auto">
-            {["all", "onTrip", "online", "offline"].map((filter) => (
-              <Button
-                key={filter}
-                variant={filterBy === filter ? "default" : "outline"}
-                className={`rounded-full px-6 whitespace-nowrap ${
-                  filterBy === filter 
-                    ? "bg-blue-900 text-white hover:bg-blue-800" 
-                    : "text-gray-600 border-gray-300 hover:bg-gray-50"
-                }`}
-                onClick={() => setFilterBy(filter)}
-              >
-                {filter === "onTrip" ? "On Trip" : filter.charAt(0).toUpperCase() + filter.slice(1)}
-              </Button>
-            ))}
+          <div className="flex gap-2 mb-6">
+            <Button
+              variant={activeTab === "all" ? "default" : "outline"}
+              className={`rounded-full px-6 ${
+                activeTab === "all" 
+                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
+              onClick={() => setActiveTab("all")}
+            >
+              All
+            </Button>
+            <Button
+              variant={activeTab === "onTrip" ? "default" : "outline"}
+              className={`rounded-full px-6 flex items-center gap-2 ${
+                activeTab === "onTrip" 
+                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
+              onClick={() => setActiveTab("onTrip")}
+            >
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              On Trip ({vehicles.filter(v => v.status === 'ontrip').length})
+            </Button>
+            <Button
+              variant={activeTab === "online" ? "default" : "outline"}
+              className={`rounded-full px-6 flex items-center gap-2 ${
+                activeTab === "online" 
+                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
+              onClick={() => setActiveTab("online")}
+            >
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              Online ({vehicles.filter(v => v.status === 'online').length})
+            </Button>
+            <Button
+              variant={activeTab === "offline" ? "default" : "outline"}
+              className={`rounded-full px-6 flex items-center gap-2 ${
+                activeTab === "offline" 
+                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
+              onClick={() => setActiveTab("offline")}
+            >
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+              Offline ({vehicles.filter(v => v.status === 'offline').length})
+            </Button>
           </div>
 
           {/* Vehicle List */}
-          <div className="space-y-4">
-            {vehicles.map((vehicle: Vehicle) => (
-              <Card key={vehicle.driverId} className="bg-white">
+          <div className="space-y-3 pb-20 md:pb-4">
+            {filteredVehicles.length > 0 ? filteredVehicles.map((vehicle) => (
+              <Card 
+                key={vehicle.id} 
+                className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white border border-gray-200 shadow-sm rounded-xl"
+                onClick={() => onVehicleSelect(vehicle)}
+              >
                 <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    <img 
-                      src={vehicle.imageUrl} 
-                      alt={vehicle.name}
-                      className="w-16 h-16 rounded-lg object-cover"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-gray-900">{vehicle.name}</h3>
-                        <span className={`px-3 py-1 rounded-full text-white text-sm ${getStatusColor(vehicle.status)}`}>
-                          {getStatusText(vehicle.status)}
-                        </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-1">
+                      {/* Vehicle Image */}
+                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="3" y="9" width="18" height="9" rx="1.5" fill="#4B5563"/>
+                          <rect x="1.5" y="12" width="3" height="3" rx="1.5" fill="#374151"/>
+                          <rect x="19.5" y="12" width="3" height="3" rx="1.5" fill="#374151"/>
+                          <rect x="6" y="6" width="12" height="4.5" rx="0.75" fill="#6B7280"/>
+                          <circle cx="6.75" cy="19.5" r="2.25" fill="#1F2937"/>
+                          <circle cx="17.25" cy="19.5" r="2.25" fill="#1F2937"/>
+                          <circle cx="6.75" cy="19.5" r="1.125" fill="#9CA3AF"/>
+                          <circle cx="17.25" cy="19.5" r="1.125" fill="#9CA3AF"/>
+                        </svg>
                       </div>
-                      <p className="text-gray-600 text-sm mb-1">{vehicle.vehicleNumber}</p>
-                      <p className="text-gray-500 text-sm">{vehicle.vehicleTypeName}</p>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-semibold text-gray-900 text-base">{vehicle.driverName}</h3>
+                          <div className={`w-3 h-3 rounded-full ${getStatusColor(vehicle.status)}`}></div>
+                        </div>
+                        <p className="text-sm text-gray-500 mb-2">{vehicle.vehicleNumber}</p>
+                        <div className="text-lg font-bold text-gray-900 mb-2">{vehicle.earnings}</div>
+                        <div className="flex items-center gap-1 text-gray-500">
+                          <MapPin className="w-4 h-4" />
+                          <span className="text-sm">{vehicle.location}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => onVehicleSelect({
-                          id: vehicle.driverId,
-                          driverName: vehicle.name,
-                          vehicleNumber: vehicle.vehicleNumber,
-                          earnings: "₹1,250.00",
-                          location: `${vehicle.currentLatitude}, ${vehicle.currentLongitude}`,
-                          status: vehicle.status
-                        })}
-                      >
-                        View Details
-                      </Button>
+                    
+                    {/* Phone Icon */}
+                    <div className="ml-3">
+                      <Phone className="w-5 h-5 text-gray-400" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            )) : (
+              <div className="text-center py-8 text-gray-500">
+                No vehicles found for the selected filter
+              </div>
+            )}
           </div>
-
-          {vehicles.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              No vehicles found for the selected filter.
-            </div>
-          )}
         </div>
       </div>
     </div>
