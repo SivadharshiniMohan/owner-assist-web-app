@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { ArrowLeft, Filter } from "lucide-react";
+import { ArrowLeft, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
 
@@ -25,30 +25,21 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
   const [activeTab, setActiveTab] = useState("today");
   const [showCustomCalendar, setShowCustomCalendar] = useState(false);
   const [customDate, setCustomDate] = useState<Date>(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
 
-  const getDateRange = () => {
-    const today = new Date();
-    switch (activeTab) {
-      case "today":
-        return { start: today, end: today };
-      case "weekly":
-        return { start: startOfWeek(today), end: endOfWeek(today) };
-      case "custom":
-        return { start: customDate, end: customDate };
-      default:
-        return { start: today, end: today };
-    }
-  };
-
-  const { data: transactions, isLoading, error } = useQuery({
-    queryKey: ['walletTransactions', activeTab, customDate],
+  const { data: transactionData, isLoading, error } = useQuery({
+    queryKey: ['walletTransactions', activeTab, customDate, currentPage, pageSize],
     queryFn: async () => {
-      const response = await fetch('https://book.ecargo.co.in/v2/driver/walletTxns?id=1&pageNo=1&pageSize=50');
+      const response = await fetch(`https://book.ecargo.co.in/v2/driver/walletTxns?id=1&pageNo=${currentPage}&pageSize=${pageSize}`);
       if (!response.ok) {
         throw new Error('Failed to fetch transactions');
       }
       const data = await response.json();
-      return data.data || [];
+      return {
+        transactions: data.data || [],
+        totalCount: data.total_count || 0
+      };
     },
   });
 
@@ -159,6 +150,10 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
     return 'text-gray-600';
   };
 
+  const transactions = transactionData?.transactions || [];
+  const totalCount = transactionData?.totalCount || 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white font-sans">
@@ -179,8 +174,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
         <div className="md:ml-64 pt-4 md:pt-0">
           <div className="container mx-auto px-4 py-4 max-w-8xl">
             <div className="flex items-center justify-center h-64">
-              <div className="text-red-500">Error loading transactions.
-              Please try again.</div>
+              <div className="text-red-500">Error loading transactions. Please try again.</div>
             </div>
           </div>
         </div>
@@ -287,7 +281,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
 
           {/* Transactions Header */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Transactions ({transactions?.length || 0})</h3>
+            <h3 className="text-lg font-semibold">Transactions ({totalCount})</h3>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Filter className="h-4 w-4 text-gray-600" />
             </Button>
@@ -296,7 +290,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
           <div className="text-sm text-gray-500 mb-4">Recent Transactions</div>
 
           {/* Transactions List */}
-          <div className="space-y-0">
+          <div className="space-y-0 mb-6">
             {transactions && transactions.length > 0 ? (
               transactions.map((transaction: WalletTransaction, index: number) => {
                 const isPositive = isPositiveTransaction(transaction.TRANSACTION_TYPE, transaction.AMOUNT);
@@ -326,6 +320,38 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
               </div>
             )}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} results
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="h-8 w-8"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-gray-600">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="h-8 w-8"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

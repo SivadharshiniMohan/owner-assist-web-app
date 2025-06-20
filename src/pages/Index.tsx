@@ -22,14 +22,6 @@ interface Vehicle {
   status: "ontrip" | "online" | "offline";
 }
 
-interface FleetStats {
-  total: number;
-  onTrip: number;
-  online: number;
-  offline: number;
-  suspended: number;
-}
-
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentView, setCurrentView] = useState("dashboard");
@@ -46,7 +38,7 @@ const Index = () => {
         throw new Error('Failed to fetch fleet status');
       }
       const data = await response.json();
-      return data.data || { total: 0, onTrip: 0, online: 0, offline: 0, suspended: 0 };
+      return data.data || { onTrip: 0, online: 0, offline: 0 };
     },
   });
 
@@ -67,13 +59,8 @@ const Index = () => {
   const currentEarnings = getEarningsForDate(selectedDate);
   const currentDateString = format(selectedDate, "EEE, d MMM yyyy");
   
-  const fleetData = fleetStats || {
-    total: 10,
-    onTrip: 4,
-    online: 3,
-    offline: 2,
-    suspended: 1
-  };
+  const fleetData = fleetStats || { onTrip: 0, online: 0, offline: 0 };
+  const totalFleet = fleetData.onTrip + fleetData.online + fleetData.offline;
 
   const DashboardView = () => (
     <div className="min-h-screen bg-gray-50">
@@ -159,7 +146,7 @@ const Index = () => {
           <div className="bg-white rounded-2xl shadow-sm mb-4">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">My Fleet ({fleetData.total})</h2>
+                <h2 className="text-lg font-semibold text-gray-900">My Fleet ({totalFleet})</h2>
                 <button 
                   onClick={() => setCurrentView("fleet")}
                   className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
@@ -168,10 +155,10 @@ const Index = () => {
                 </button>
               </div>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="bg-blue-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.onTrip}<span className="text-sm font-normal opacity-90">/{fleetData.total}</span></div>
+                    <div className="text-2xl font-bold">{fleetData.onTrip}<span className="text-sm font-normal opacity-90">/{totalFleet}</span></div>
                     <div className="text-sm mt-1">On Trip</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
@@ -184,7 +171,7 @@ const Index = () => {
                 
                 <div className="bg-green-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.online}<span className="text-sm font-normal opacity-90">/{fleetData.total}</span></div>
+                    <div className="text-2xl font-bold">{fleetData.online}<span className="text-sm font-normal opacity-90">/{totalFleet}</span></div>
                     <div className="text-sm mt-1">Online</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
@@ -197,26 +184,13 @@ const Index = () => {
                 
                 <div className="bg-gray-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.offline}<span className="text-sm font-normal opacity-90">/{fleetData.total}</span></div>
+                    <div className="text-2xl font-bold">{fleetData.offline}<span className="text-sm font-normal opacity-90">/{totalFleet}</span></div>
                     <div className="text-sm mt-1">Offline</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
                     <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
                       <circle cx="30" cy="30" r="20" fill="white" fillOpacity="0.3"/>
                       <rect x="25" y="25" width="10" height="10" fill="white" fillOpacity="0.4"/>
-                    </svg>
-                  </div>
-                </div>
-                
-                <div className="bg-red-500 text-white rounded-xl p-4 relative overflow-hidden">
-                  <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.suspended}<span className="text-sm font-normal opacity-90">/{fleetData.total}</span></div>
-                    <div className="text-sm mt-1">Suspended</div>
-                  </div>
-                  <div className="absolute -right-2 -bottom-2 opacity-20">
-                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-                      <circle cx="30" cy="30" r="20" fill="white" fillOpacity="0.3"/>
-                      <path d="M20 20L40 40M40 20L20 40" stroke="white" strokeWidth="3" strokeOpacity="0.4"/>
                     </svg>
                   </div>
                 </div>

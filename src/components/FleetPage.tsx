@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
 
 interface Vehicle {
   id: number;
@@ -27,7 +26,8 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   const { data: fleetList, isLoading } = useQuery({
     queryKey: ['fleetList', activeTab],
     queryFn: async () => {
-      const response = await fetch(`https://book.ecargo.co.in/v2/oa/stats/fleetList?oaId=13&filterBy=${activeTab}`);
+      const filterParam = activeTab === "onTrip" ? "onTrip" : activeTab;
+      const response = await fetch(`https://book.ecargo.co.in/v2/oa/stats/fleetList?oaId=13&filterBy=${filterParam}`);
       if (!response.ok) {
         throw new Error('Failed to fetch fleet list');
       }
@@ -37,15 +37,16 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   });
 
   // Transform API data to match our interface
-  const vehicles: Vehicle[] = fleetList?.map((item: any, index: number) => ({
-    id: item.driverId || index,
-    driverName: item.driverName || "Driver name",
+  const vehicles: Vehicle[] = fleetList?.map((item: any) => ({
+    id: item.driverId || 0,
+    driverName: item.name || "Driver name",
     vehicleNumber: item.vehicleNumber || "XX 00 ZZ 0000",
-    earnings: `₹${item.earnings || "00,000.00"}`,
-    location: item.location || "4th block, Koramangala",
-    status: item.status?.toLowerCase() || "offline",
-    rating: item.rating || 4.5,
-    phone: item.phoneNumber || "+91 9876543210"
+    earnings: `₹${Math.floor(Math.random() * 50000) + 10000}.00`, // Mock earnings since not in API
+    location: "4th block, Koramangala", // Mock location since not in API
+    status: item.status?.toLowerCase() === "ontrip" ? "ontrip" : 
+            item.status?.toLowerCase() === "online" ? "online" : "offline",
+    rating: 4.5, // Mock rating since not in API
+    phone: "+91 9876543210" // Mock phone since not in API
   })) || [];
 
   const getStatusColor = (status: string) => {
@@ -57,7 +58,15 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
     }
   };
 
-  const filteredVehicles = vehicles;
+  const getFilteredVehicles = () => {
+    if (activeTab === "all") return vehicles;
+    return vehicles.filter(vehicle => {
+      if (activeTab === "onTrip") return vehicle.status === "ontrip";
+      return vehicle.status === activeTab;
+    });
+  };
+
+  const filteredVehicles = getFilteredVehicles();
 
   if (isLoading) {
     return (
