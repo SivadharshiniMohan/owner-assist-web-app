@@ -44,14 +44,15 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
     if (activeTab === "all") return true;
     if (activeTab === "ontrip") return vehicle.status === "ontrip";
     if (activeTab === "online") return vehicle.status === "online";
+    if (activeTab === "offline") return vehicle.status === "offline";
     return false;
   });
 
   return (
     <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="container mx-auto px-4 py-4 max-w-6xl">
-          {/* Filter Tabs - Updated to match ledger page style */}
+        <div className="container mx-auto px-4 py-4 max-w-7xl">
+          {/* Filter Tabs */}
           <div className="flex gap-2 mb-6">
             <Button
               variant={activeTab === "all" ? "default" : "outline"}
@@ -87,6 +88,18 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
             >
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               Online ({vehicles.filter(v => v.status === 'online').length})
+            </Button>
+            <Button
+              variant={activeTab === "offline" ? "default" : "outline"}
+              className={`rounded-full px-6 flex items-center gap-2 ${
+                activeTab === "offline" 
+                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
+              onClick={() => setActiveTab("offline")}
+            >
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+              Offline ({vehicles.filter(v => v.status === 'offline').length})
             </Button>
           </div>
 

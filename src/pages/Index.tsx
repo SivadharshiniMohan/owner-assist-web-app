@@ -52,18 +52,10 @@ const Index = () => {
     suspended: 1
   };
 
-  // Determine sidebar width based on current view
-  const getSidebarWidth = () => {
-    if (currentView === "ledger" || currentView === "vehicle") {
-      return "md:ml-20"; // Icon mode
-    }
-    return "md:ml-64"; // Full width
-  };
-
   const DashboardView = () => (
     <div className="min-h-screen bg-gray-50">
-      <div className={`${getSidebarWidth()} pt-4 md:pt-0`}>
-        <div className="container mx-auto px-4 py-4 max-w-6xl">
+      <div className="md:ml-64 pt-4 md:pt-0">
+        <div className="container mx-auto px-4 py-4 max-w-7xl">
           {/* Earnings Section */}
           <div className="mb-3">
             <div className="text-sm text-gray-600 mb-1">Today's Earnings</div>

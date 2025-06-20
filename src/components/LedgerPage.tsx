@@ -3,120 +3,141 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Filter } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 interface LedgerPageProps {
   onBack: () => void;
 }
 
+interface WalletTransaction {
+  id: number;
+  txnType: string;
+  amount: number;
+  created: string;
+  status: string;
+  description?: string;
+}
+
 const LedgerPage = ({ onBack }: LedgerPageProps) => {
   const [activeTab, setActiveTab] = useState("today");
 
-  const transactions = [
-    { 
-      id: 1, 
-      type: "Trip earnings", 
-      time: "10:10 AM • Cash", 
-      amount: "₹1,200.00", 
-      positive: true,
-      icon: "trip",
-      color: "text-green-600"
+  const { data: transactions, isLoading, error } = useQuery({
+    queryKey: ['walletTransactions'],
+    queryFn: async () => {
+      const response = await fetch('https://book.ecargo.co.in/v2/driver/walletTxns?id=1&pageNo=1&pageSize=5');
+      if (!response.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+      const data = await response.json();
+      return data.data || [];
     },
-    { 
-      id: 2, 
-      type: "Incentives", 
-      time: "09:00 PM • Online", 
-      amount: "₹100.00", 
-      positive: true,
-      icon: "incentive",
-      color: "text-green-600"
-    },
-    { 
-      id: 3, 
-      type: "Penalty", 
-      time: "09:15 AM", 
-      amount: "₹60.00", 
-      positive: false,
-      icon: "penalty",
-      color: "text-red-600"
-    },
-    { 
-      id: 4, 
-      type: "Recharge success", 
-      time: "07:16 AM", 
-      amount: "₹1,800.00", 
-      positive: true,
-      icon: "recharge",
-      color: "text-green-600"
-    },
-    { 
-      id: 5, 
-      type: "Recharge failed", 
-      time: "06:30 PM", 
-      amount: "₹600.00", 
-      positive: false,
-      icon: "failed",
-      color: "text-gray-400"
-    },
-  ];
+  });
 
   const getTransactionIcon = (type: string) => {
-    switch (type) {
-      case "trip":
-        return (
-          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 8h12m-6-6l6 6-6 6" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-        );
-      case "incentive":
-        return (
-          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1l2 6h5l-4 3 2 6-5-4-5 4 2-6-4-3h5z" fill="#10B981"/>
-            </svg>
-          </div>
-        );
-      case "penalty":
-        return (
-          <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="7" stroke="#EF4444" strokeWidth="2"/>
-              <path d="M5.5 5.5l5 5m0-5l-5 5" stroke="#EF4444" strokeWidth="2"/>
-            </svg>
-          </div>
-        );
-      case "recharge":
-        return (
-          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 2v12m4-8l-4-4-4 4" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-        );
-      case "failed":
-        return (
-          <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="7" stroke="#EF4444" strokeWidth="2"/>
-              <path d="M8 4v4m0 4h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </div>
-        );
-      default:
-        return (
-          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">
-            💰
-          </div>
-        );
+    const lowerType = type.toLowerCase();
+    
+    if (lowerType.includes('trip') || lowerType.includes('earning')) {
+      return (
+        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 8h12m-6-6l6 6-6 6" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      );
+    }
+    
+    if (lowerType.includes('incentive') || lowerType.includes('bonus')) {
+      return (
+        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1l2 6h5l-4 3 2 6-5-4-5 4 2-6-4-3h5z" fill="#10B981"/>
+          </svg>
+        </div>
+      );
+    }
+    
+    if (lowerType.includes('penalty') || lowerType.includes('deduct')) {
+      return (
+        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="#EF4444" strokeWidth="2"/>
+            <path d="M5.5 5.5l5 5m0-5l-5 5" stroke="#EF4444" strokeWidth="2"/>
+          </svg>
+        </div>
+      );
+    }
+    
+    if (lowerType.includes('recharge') || lowerType.includes('credit')) {
+      return (
+        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2v12m4-8l-4-4-4 4" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">
+        💰
+      </div>
+    );
+  };
+
+  const formatTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('en-IN', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      }) + ' • Online';
+    } catch {
+      return 'N/A';
     }
   };
+
+  const isPositiveTransaction = (type: string, amount: number) => {
+    const lowerType = type.toLowerCase();
+    if (lowerType.includes('penalty') || lowerType.includes('deduct')) {
+      return false;
+    }
+    return amount > 0;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
+        <div className="md:ml-64 pt-4 md:pt-0">
+          <div className="container mx-auto px-4 py-4 max-w-5xl">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-gray-500">Loading transactions...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
+        <div className="md:ml-64 pt-4 md:pt-0">
+          <div className="container mx-auto px-4 py-4 max-w-5xl">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-red-500">Error loading transactions. Please try again.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
-        <div className="container mx-auto px-4 py-4 max-w-4xl">
-          {/* Header with better alignment */}
+        <div className="container mx-auto px-4 py-4 max-w-5xl">
+          {/* Header */}
           <div className="flex items-center gap-3 mb-6">
             <Button
               variant="ghost"
@@ -169,32 +190,41 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
             </Button>
           </div>
 
-          {/* Transactions Header with corrected filter icon */}
+          {/* Transactions Header */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Transactions (10)</h3>
+            <h3 className="text-lg font-semibold">Transactions ({transactions?.length || 0})</h3>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Filter className="h-4 w-4 text-gray-600" />
             </Button>
           </div>
 
-          <div className="text-sm text-gray-500 mb-4">Thu, 5 Sep 2024</div>
+          <div className="text-sm text-gray-500 mb-4">Recent Transactions</div>
 
           {/* Transactions List */}
           <div className="space-y-0">
-            {transactions.map((transaction, index) => (
-              <div key={transaction.id} className={`flex items-center justify-between py-4 ${index !== transactions.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                <div className="flex items-center gap-3">
-                  {getTransactionIcon(transaction.icon)}
-                  <div>
-                    <div className="font-medium text-sm text-gray-900">{transaction.type}</div>
-                    <div className="text-xs text-gray-500">{transaction.time}</div>
+            {transactions && transactions.length > 0 ? (
+              transactions.map((transaction: WalletTransaction, index: number) => {
+                const isPositive = isPositiveTransaction(transaction.txnType, transaction.amount);
+                return (
+                  <div key={transaction.id} className={`flex items-center justify-between py-4 ${index !== transactions.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                    <div className="flex items-center gap-3">
+                      {getTransactionIcon(transaction.txnType)}
+                      <div>
+                        <div className="font-medium text-sm text-gray-900">{transaction.txnType}</div>
+                        <div className="text-xs text-gray-500">{formatTime(transaction.created)}</div>
+                      </div>
+                    </div>
+                    <div className={`font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                      {isPositive ? '' : '- '}₹{Math.abs(transaction.amount).toFixed(2)}
+                    </div>
                   </div>
-                </div>
-                <div className={`font-semibold ${transaction.color}`}>
-                  {transaction.positive ? '' : '- '}{transaction.amount}
-                </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                No transactions found
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
