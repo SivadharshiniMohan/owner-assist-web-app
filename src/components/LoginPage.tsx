@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiService } from "@/services/apiService";
+import { Eye, EyeOff } from "lucide-react";
 import ForgotPasswordPage from "./ForgotPasswordPage";
 import OTPVerificationPage from "./OTPVerificationPage";
 import ResetPasswordPage from "./ResetPasswordPage";
@@ -17,6 +18,7 @@ interface LoginPageProps {
 const LoginPage = ({ onLogin }: LoginPageProps) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [currentView, setCurrentView] = useState<"login" | "forgot" | "otp" | "reset">("login");
   const [forgotPhoneNumber, setForgotPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -110,17 +112,28 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 maxLength={10}
+                className="focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300"
               />
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-10 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
             
             <div className="text-right">

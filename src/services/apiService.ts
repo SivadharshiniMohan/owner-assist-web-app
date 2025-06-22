@@ -10,7 +10,6 @@ class ApiService {
     
     const config: RequestInit = {
       headers: {
-        'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
@@ -28,9 +27,16 @@ class ApiService {
 
   // Authentication methods
   async login(phoneNumber: string, password: string) {
+    const formData = new URLSearchParams();
+    formData.append('phoneNumber', phoneNumber);
+    formData.append('password', password);
+
     const response = await this.request<any>('/v2/oa/login', {
       method: 'POST',
-      body: JSON.stringify({ phoneNumber, password }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
     });
     
     if (response.token) {

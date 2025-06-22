@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react";
 
 interface ResetPasswordPageProps {
   phoneNumber: string;
@@ -14,6 +15,8 @@ interface ResetPasswordPageProps {
 const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const resetPasswordMutation = useMutation({
     mutationFn: async (data: { number: string; password: string }) => {
@@ -49,26 +52,44 @@ const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) =
           <div className="space-y-6">
             <div>
               <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter the password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-2 h-12 border-gray-300 rounded-lg"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter the password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-2 h-12 border-gray-300 rounded-lg pr-10 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
 
             <div>
               <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Enter the confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-2 h-12 border-gray-300 rounded-lg"
-              />
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Enter the confirm password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="mt-2 h-12 border-gray-300 rounded-lg pr-10 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
             
             <Button 
