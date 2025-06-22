@@ -29,7 +29,7 @@ const RevenueChart = () => {
   const chartConfig = {
     count: {
       label: "Daily Count",
-      color: "hsl(var(--chart-1))",
+      color: "#3B82F6", // Blue color
     },
   };
 
@@ -53,19 +53,19 @@ const RevenueChart = () => {
       <CardHeader>
         <CardTitle>Trips Count Trend</CardTitle>
       </CardHeader>
-      <CardContent className="pl-0">
+      <CardContent className="pl-2">
         <ChartContainer config={chartConfig} className="h-64 w-full">
           <AreaChart data={chartData} margin={{ left: 0, right: 12, top: 12, bottom: 12 }}>
             <defs>
               <linearGradient id="fillCount" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-count)"
+                  stopColor="#3B82F6"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-count)"
+                  stopColor="#3B82F6"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -92,7 +92,7 @@ const RevenueChart = () => {
               type="monotone"
               fill="url(#fillCount)"
               fillOpacity={0.4}
-              stroke="var(--color-count)"
+              stroke="#3B82F6"
               strokeWidth={2}
             />
           </AreaChart>

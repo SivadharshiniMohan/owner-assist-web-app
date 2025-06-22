@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,6 +41,10 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
       };
     },
   });
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   const getTransactionIcon = (type: string) => {
     if (!type) return getDefaultIcon();
@@ -192,7 +195,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
               variant="ghost"
               size="icon"
               onClick={onBack}
-              className="text-gray-600 hover:text-blue-600 h-8 w-8"
+              className="text-gray-600 hover:text-green-600 h-8 w-8"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -208,7 +211,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
               variant={activeTab === "today" ? "default" : "outline"}
               className={`rounded-full px-6 ${
                 activeTab === "today" 
-                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  ? "bg-green-600 text-white hover:bg-green-700" 
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
               }`}
               onClick={() => setActiveTab("today")}
@@ -219,7 +222,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
               variant={activeTab === "weekly" ? "default" : "outline"}
               className={`rounded-full px-6 ${
                 activeTab === "weekly" 
-                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  ? "bg-green-600 text-white hover:bg-green-700" 
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
               }`}
               onClick={() => setActiveTab("weekly")}
@@ -230,7 +233,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
               variant={activeTab === "custom" ? "default" : "outline"}
               className={`rounded-full px-6 ${
                 activeTab === "custom" 
-                  ? "bg-blue-900 text-white hover:bg-blue-800" 
+                  ? "bg-green-600 text-white hover:bg-green-700" 
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
               }`}
               onClick={() => {
@@ -321,7 +324,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
             )}
           </div>
 
-          {/* Pagination */}
+          {/* Enhanced Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">
@@ -331,19 +334,49 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
                   className="h-8 w-8"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm text-gray-600">
-                  Page {currentPage} of {totalPages}
-                </span>
+                
+                {/* Page numbers */}
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`h-8 w-8 p-0 ${
+                          currentPage === pageNum 
+                            ? "bg-green-600 text-white hover:bg-green-700" 
+                            : "text-gray-600 border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
                   className="h-8 w-8"
                 >

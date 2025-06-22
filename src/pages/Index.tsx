@@ -73,7 +73,7 @@ const Index = () => {
             <div className="flex items-center gap-2 mb-3">
               <button 
                 onClick={() => setShowCalendar(!showCalendar)}
-                className="flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
+                className="flex items-center text-sm text-gray-500 hover:text-green-600 transition-colors"
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 {currentDateString}
@@ -126,8 +126,8 @@ const Index = () => {
                         }}
                         className={`
                           w-8 h-8 text-sm rounded-full flex items-center justify-center
-                          ${isSelected ? 'bg-blue-600 text-white' : ''}
-                          ${isToday && !isSelected ? 'bg-blue-100 text-blue-600' : ''}
+                          ${isSelected ? 'bg-green-600 text-white' : ''}
+                          ${isToday && !isSelected ? 'bg-green-100 text-green-600' : ''}
                           ${hasEarnings && !isSelected && !isToday ? 'bg-green-100 text-green-600' : ''}
                           ${!hasEarnings && !isSelected && !isToday ? 'text-gray-400' : ''}
                           hover:bg-gray-100 transition-colors
