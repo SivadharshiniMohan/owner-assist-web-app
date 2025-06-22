@@ -1,10 +1,6 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { ArrowLeft, Filter, ChevronLeft, ChevronRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
+import { ArrowLeft } from "lucide-react";
 
 interface LedgerPageProps {
   onBack: () => void;
@@ -21,175 +17,95 @@ interface WalletTransaction {
 }
 
 const LedgerPage = ({ onBack }: LedgerPageProps) => {
-  const [activeTab, setActiveTab] = useState("today");
-  const [showCustomCalendar, setShowCustomCalendar] = useState(false);
-  const [customDate, setCustomDate] = useState<Date>(new Date());
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(5);
+  const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const loader = useRef<HTMLDivElement | null>(null);
 
-  const { data: transactionData, isLoading, error } = useQuery({
-    queryKey: ['walletTransactions', activeTab, customDate, currentPage, pageSize],
-    queryFn: async () => {
-      const response = await fetch(`https://book.ecargo.co.in/v2/driver/walletTxns?id=1&pageNo=${currentPage}&pageSize=${pageSize}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch transactions');
-      }
+  const fetchTransactions = async (page: number) => {
+    setIsFetchingMore(true);
+    try {
+      const response = await fetch(
+        `https://book.ecargo.co.in/v2/driver/walletTxns?id=1&pageNo=${page}&pageSize=${pageSize}`
+      );
       const data = await response.json();
-      return {
-        transactions: data.data || [],
-        totalCount: data.total_count || 0
-      };
-    },
-  });
-
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
+      if (data.data && data.data.length > 0) {
+        setTransactions((prev) => [...prev, ...data.data]);
+      }
+      if (!data.data || data.data.length < pageSize) {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error("Failed to fetch transactions", err);
+    } finally {
+      setIsFetchingMore(false);
+    }
   };
+  
+
+  useEffect(() => {
+    fetchTransactions(currentPage);
+  }, [currentPage]);
+
+  const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    if (target.isIntersecting && hasMore && !isFetchingMore) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }, [hasMore, isFetchingMore]);
+
+  useEffect(() => {
+    const option = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 1.0,
+    };
+    const observer = new IntersectionObserver(handleObserver, option);
+    if (loader.current) observer.observe(loader.current);
+    return () => {
+      if (loader.current) observer.unobserve(loader.current);
+    };
+  }, [handleObserver]);
 
   const getTransactionIcon = (type: string) => {
-    if (!type) return getDefaultIcon();
-    
-    const lowerType = type.toLowerCase();
-    
-    // Commission
-    if (lowerType.includes('commission')) {
-      return (
-        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 1l2 6h5l-4 3 2 6-5-4-5 4 2-6-4-3h5z" fill="#3B82F6"/>
-          </svg>
-        </div>
-      );
-    }
-    
-    // Penalty
-    if (lowerType.includes('penalty') || lowerType.includes('fine')) {
-      return (
-        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="7" stroke="#EF4444" strokeWidth="2"/>
-            <path d="M5.5 5.5l5 5m0-5l-5 5" stroke="#EF4444" strokeWidth="2"/>
-          </svg>
-        </div>
-      );
-    }
-    
-    // Recharge
-    if (lowerType.includes('recharge') || lowerType.includes('credit')) {
-      return (
-        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 2v12m4-8l-4-4-4 4" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-      );
-    }
-    
-    // Withdrawal
-    if (lowerType.includes('withdrawal') || lowerType.includes('withdraw')) {
-      return (
-        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 14V2m-4 8l4 4 4-4" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-      );
-    }
-    
-    // Reward
-    if (lowerType.includes('reward') || lowerType.includes('bonus')) {
-      return (
-        <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 1l2 6h5l-4 3 2 6-5-4-5 4 2-6-4-3h5z" fill="#8B5CF6"/>
-          </svg>
-        </div>
-      );
-    }
-    
-    return getDefaultIcon();
+    const lowerType = type?.toLowerCase() || "";
+    const iconClass = "w-8 h-8 rounded-full flex items-center justify-center";
+
+    if (lowerType.includes("commission")) return <div className={`${iconClass} bg-blue-100`}>💼</div>;
+    if (lowerType.includes("penalty") || lowerType.includes("fine")) return <div className={`${iconClass} bg-red-100`}>⚠️</div>;
+    if (lowerType.includes("recharge") || lowerType.includes("credit")) return <div className={`${iconClass} bg-green-100`}>➕</div>;
+    if (lowerType.includes("withdraw")) return <div className={`${iconClass} bg-orange-100`}>➖</div>;
+    if (lowerType.includes("reward") || lowerType.includes("bonus")) return <div className={`${iconClass} bg-purple-100`}>🎁</div>;
+
+    return <div className={`${iconClass} bg-gray-100`}>💰</div>;
   };
 
-  const getDefaultIcon = () => (
-    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">
-      💰
-    </div>
-  );
-
   const formatTime = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    
+    if (!dateString) return "N/A";
     try {
       const date = new Date(dateString);
-      return date.toLocaleTimeString('en-IN', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
-      }) + ' • Online';
+      return date.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }) + " • Online";
     } catch {
-      return 'N/A';
+      return "N/A";
     }
   };
 
   const isPositiveTransaction = (type: string, amount: number) => {
-    if (!type) return amount > 0;
-    
-    const lowerType = type.toLowerCase();
-    if (lowerType.includes('penalty') || lowerType.includes('fine') || lowerType.includes('withdrawal')) {
-      return false;
-    }
+    const lowerType = type?.toLowerCase() || "";
+    if (lowerType.includes("penalty") || lowerType.includes("fine") || lowerType.includes("withdraw")) return false;
     return amount > 0;
   };
-
-  const getTransactionColor = (type: string) => {
-    if (!type) return 'text-gray-600';
-    
-    const lowerType = type.toLowerCase();
-    if (lowerType.includes('commission')) return 'text-blue-600';
-    if (lowerType.includes('penalty') || lowerType.includes('fine')) return 'text-red-600';
-    if (lowerType.includes('recharge')) return 'text-green-600';
-    if (lowerType.includes('withdrawal')) return 'text-orange-600';
-    if (lowerType.includes('reward')) return 'text-purple-600';
-    return 'text-gray-600';
-  };
-
-  const transactions = transactionData?.transactions || [];
-  const totalCount = transactionData?.totalCount || 0;
-  const totalPages = Math.ceil(totalCount / pageSize);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
-        <div className="md:ml-64 pt-4 md:pt-0">
-          <div className="container mx-auto px-4 py-4 max-w-8xl">
-            <div className="flex items-center justify-center h-64">
-              <div className="text-gray-500">Loading transactions...</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
-        <div className="md:ml-64 pt-4 md:pt-0">
-          <div className="container mx-auto px-4 py-4 max-w-8xl">
-            <div className="flex items-center justify-center h-64">
-              <div className="text-red-500">Error loading transactions. Please try again.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-white font-sans">
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-8xl">
-          {/* Header */}
           <div className="flex items-center gap-3 mb-6">
             <Button
               variant="ghost"
@@ -199,111 +115,25 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div>
-              <h1 className="text-lg font-semibold text-gray-900">Ledger</h1>
-              <p className="text-sm text-gray-500">Balance: ₹500.00</p>
-            </div>
-          </div>
-
-          {/* Filter Tabs */}
-          <div className="flex gap-2 mb-6">
-            <Button
-              variant={activeTab === "today" ? "default" : "outline"}
-              className={`rounded-full px-6 ${
-                activeTab === "today" 
-                  ? "bg-green-600 text-white hover:bg-green-700" 
-                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
-              }`}
-              onClick={() => setActiveTab("today")}
-            >
-              Today
-            </Button>
-            <Button
-              variant={activeTab === "weekly" ? "default" : "outline"}
-              className={`rounded-full px-6 ${
-                activeTab === "weekly" 
-                  ? "bg-green-600 text-white hover:bg-green-700" 
-                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
-              }`}
-              onClick={() => setActiveTab("weekly")}
-            >
-              Weekly
-            </Button>
-            <Button
-              variant={activeTab === "custom" ? "default" : "outline"}
-              className={`rounded-full px-6 ${
-                activeTab === "custom" 
-                  ? "bg-green-600 text-white hover:bg-green-700" 
-                  : "text-gray-600 border-gray-300 hover:bg-gray-50"
-              }`}
-              onClick={() => {
-                setActiveTab("custom");
-                setShowCustomCalendar(true);
-              }}
-            >
-              Custom
-            </Button>
-          </div>
-
-          {/* Custom Calendar */}
-          {showCustomCalendar && activeTab === "custom" && (
-            <Card className="mb-6">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Select Custom Date</h3>
-                  <button 
-                    onClick={() => setShowCustomCalendar(false)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="flex justify-center">
-                  <Calendar
-                    mode="single"
-                    selected={customDate}
-                    onSelect={(date) => {
-                      if (date) {
-                        setCustomDate(date);
-                        setShowCustomCalendar(false);
-                      }
-                    }}
-                    className="rounded-md border"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Selected Date Display */}
-          {activeTab === "custom" && (
-            <div className="mb-4 text-sm text-gray-600">
-              Selected Date: {format(customDate, "dd MMM yyyy")}
-            </div>
-          )}
-
-          {/* Transactions Header */}
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Transactions ({totalCount})</h3>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Filter className="h-4 w-4 text-gray-600" />
-            </Button>
+            
           </div>
 
           <div className="text-sm text-gray-500 mb-4">Recent Transactions</div>
 
-          {/* Transactions List */}
           <div className="space-y-0 mb-6">
-            {transactions && transactions.length > 0 ? (
-              transactions.map((transaction: WalletTransaction, index: number) => {
+            {transactions.length > 0 ? (
+              transactions.map((transaction) => {
                 const isPositive = isPositiveTransaction(transaction.TRANSACTION_TYPE, transaction.AMOUNT);
                 return (
-                  <div key={transaction.TRANSACTION_ID} className={`flex items-center justify-between py-4 ${index !== transactions.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                  <div
+                    key={transaction.TRANSACTION_ID}
+                    className="flex items-center justify-between py-4 border-b border-gray-100"
+                  >
                     <div className="flex items-center gap-3">
                       {getTransactionIcon(transaction.TRANSACTION_TYPE)}
                       <div>
-                        <div className={`font-medium text-sm ${getTransactionColor(transaction.TRANSACTION_TYPE)}`}>
-                          {transaction.TRANSACTION_TYPE || 'Unknown Transaction'}
+                        <div className="font-medium text-sm text-gray-800">
+                          {transaction.TRANSACTION_TYPE || "Unknown Transaction"}
                         </div>
                         <div className="text-xs text-gray-500">{formatTime(transaction.CREATED_TIME)}</div>
                         {transaction.DESCRIPTION && (
@@ -311,80 +141,21 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
                         )}
                       </div>
                     </div>
-                    <div className={`font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                      {isPositive ? '+' : '-'}₹{Math.abs(transaction.AMOUNT || 0).toFixed(2)}
+                    <div className={`font-semibold ${isPositive ? "text-green-600" : "text-red-600"}`}>
+                      {isPositive ? "+" : "-"}₹{Math.abs(transaction.AMOUNT || 0).toFixed(2)}
                     </div>
                   </div>
                 );
               })
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                No transactions found
+              <div className="text-center py-8 text-gray-500">No transactions found</div>
+            )}
+            {hasMore && (
+              <div ref={loader} className="flex justify-center py-6">
+                <span className="text-sm text-gray-400">Loading more...</span>
               </div>
             )}
           </div>
-
-          {/* Enhanced Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
-                Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} results
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="h-8 w-8"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                
-                {/* Page numbers */}
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    
-                    return (
-                      <Button
-                        key={pageNum}
-                        variant={currentPage === pageNum ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handlePageChange(pageNum)}
-                        className={`h-8 w-8 p-0 ${
-                          currentPage === pageNum 
-                            ? "bg-green-600 text-white hover:bg-green-700" 
-                            : "text-gray-600 border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="h-8 w-8"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

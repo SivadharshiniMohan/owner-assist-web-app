@@ -2,6 +2,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin, TrendingUp } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { apiService } from "@/services/apiService";
+import { useEffect, useState } from "react";
+import LoginPage from "./LoginPage";
 
 interface Vehicle {
   id: number;
@@ -19,6 +23,26 @@ interface DriverDetailPageProps {
 }
 
 const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPageProps) => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    // // Check authentication status on component mount
+    // useEffect(() => {
+    //   const isAuthenticated = apiService.isAuthenticated();
+    //   setIsLoggedIn(isAuthenticated);
+    // }, []);
+    
+  const { data: walletBalance } = useQuery({
+    queryKey: ['fleetBalance', vehicle.id],
+    queryFn: async () => {
+      const response = await apiService.getWalletBalance(vehicle.id);
+      return response?.data?.walletBalance
+    },
+    // enabled: isLoggedIn, // Only fetch when logged in
+  });
+  console.log("Wallet Balance:", walletBalance);
+  //   // Handle login
+  // if (!isLoggedIn) {
+  //   return <LoginPage onLogin={() => setIsLoggedIn(true)} />;
+  // }
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-4">
       <div className="md:ml-64 pt-4 md:pt-0">
@@ -71,19 +95,19 @@ const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPagePro
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-2xl font-bold">₹549.86</div>
+                  <div className="text-2xl font-bold">₹{walletBalance}</div>
                   <div className="text-sm text-gray-300">Ledger Balance</div>
                 </div>
-                <div className="text-gray-400 hover:text-white transition-colors">
+                {/* <div className="text-gray-400 hover:text-white transition-colors">
                   →
-                </div>
+                </div> */}
               </div>
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
+              {/* <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
                 <span className="text-sm text-gray-300">Ledger Activity</span>
                 <button className="text-gray-400 hover:text-white transition-colors">
                   →
                 </button>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
 

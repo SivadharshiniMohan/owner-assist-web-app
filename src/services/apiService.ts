@@ -39,8 +39,10 @@ class ApiService {
       body: formData.toString(),
     });
     
-    if (response.token) {
-      this.setAuthToken(response.token);
+    if (response.data.oaId) {
+      this.setAuthToken(response.data.oaId);
+      localStorage.setItem('oaId', response?.data.oaId.toString());
+      console.log('Login successful, OA ID:', response.data.oaId);
     }
     
     return response;
@@ -67,8 +69,12 @@ class ApiService {
     return this.request<any>(`/v2/driver/walletTxns?id=${id}&pageNo=${pageNo}&pageSize=${pageSize}`);
   }
 
+    async getWalletBalance(id: number) {
+    return this.request<any>(`/v2/driver/walletBalance?id=${id}`);
+  }
+
   // Token management
-  setAuthToken(token: string) {
+  setAuthToken(token: number) {
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + ENV.TOKEN_EXPIRY_DAYS);
     
@@ -77,10 +83,12 @@ class ApiService {
       expiry: expiryDate.toISOString(),
     };
     
-    localStorage.setItem('auth_token', JSON.stringify(tokenData));
+    // localStorage.setItem('auth_token', token);
+    // localStorage.setItem('auth_token', JSON.stringify(token));
+
   }
 
-  getAuthToken(): string | null {
+  getAuthToken(): number | null {
     const tokenData = localStorage.getItem('auth_token');
     
     if (!tokenData) return null;

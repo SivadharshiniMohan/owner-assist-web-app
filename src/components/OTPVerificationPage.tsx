@@ -31,22 +31,43 @@ const OTPVerificationPage = ({ phoneNumber, onVerified }: OTPVerificationPagePro
     }
   }, [countdown]);
 
+  // const sendOtpMutation = useMutation({
+  //   mutationFn: async (phoneNumber: string) => {
+  //     const response = await fetch('https://control.msg91.com/api/v5/otp', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({
+  //         authkey: OTP_AUTH_KEY,
+  //         template_id: "671b9b39d6fc0539636ec732",
+  //         otp_expiry: 2,
+  //         mobile: `91${phoneNumber}`
+  //       })
+  //     });
+  //     if (!response.ok) throw new Error('Failed to send OTP');
+  //     return response.json();
+  //   }
+  // });
   const sendOtpMutation = useMutation({
-    mutationFn: async (phoneNumber: string) => {
-      const response = await fetch('https://control.msg91.com/api/v5/otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          authkey: OTP_AUTH_KEY,
-          template_id: "671b9b39d6fc0539636ec732",
-          otp_expiry: 2,
-          mobile: `91${phoneNumber}`
-        })
-      });
-      if (!response.ok) throw new Error('Failed to send OTP');
-      return response.json();
-    }
-  });
+  mutationFn: async (phoneNumber: string) => {
+    const formData = new URLSearchParams();
+    formData.append('authkey', OTP_AUTH_KEY);
+    formData.append('template_id', '671b9b39d6fc0539636ec732');
+    formData.append('otp_expiry', '2');
+    formData.append('mobile', `91${phoneNumber}`);
+
+    const response = await fetch('https://control.msg91.com/api/v5/otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
+
+    if (!response.ok) throw new Error('Failed to send OTP');
+    return response.json();
+  },
+});
+
 
   const resendOtpMutation = useMutation({
     mutationFn: async (phoneNumber: string) => {

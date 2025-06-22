@@ -25,27 +25,31 @@ interface FleetPageProps {
 
 const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   const [activeTab, setActiveTab] = useState("all");
+  const oaId = localStorage.getItem("oaId")
 
   const { data: fleetList, isLoading } = useQuery({
     queryKey: ['fleetList', activeTab],
     queryFn: async () => {
       const filterParam = activeTab === "onTrip" ? "onTrip" : activeTab;
-      const response = await apiService.getFleetList(13, filterParam);
+      const response = await apiService.getFleetList(oaId, filterParam);
       return response.data || [];
     },
   });
 
+  console.log("Fleet List:", fleetList);
+
   // Transform API data to match our interface
   const vehicles: Vehicle[] = fleetList?.map((item: any) => ({
     id: item.driverId || 0,
-    driverName: item.name || "Driver name",
-    vehicleNumber: item.vehicleNumber || "XX 00 ZZ 0000",
-    earnings: `₹${Math.floor(Math.random() * 50000) + 10000}.00`, // Mock earnings since not in API
-    location: "4th block, Koramangala", // Mock location since not in API
+    driverName: item.name ,
+    vehicleNumber: item.vehicleNumber,
+    earnings: item.earnings, 
+    // location: "4th block, Koramangala", // Mock location since not in API
+    vehicleType:item.vehicleTypeName,
     status: item.status?.toLowerCase() === "ontrip" ? "ontrip" : 
             item.status?.toLowerCase() === "online" ? "online" : "offline",
     rating: 4.5, // Mock rating since not in API
-    phone: item.phoneNumber || "+91 9876543210", // Use phoneNumber from API
+    phone: item.phoneNumber, // Use phoneNumber from API
     imageUrl: item.imageUrl || item.image // Get image from API
   })) || [];
 
@@ -190,19 +194,12 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <h3 className="font-semibold text-gray-900 text-base truncate">{vehicle.driverName}</h3>
-                          <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getStatusColor(vehicle.status)}`}></div>
+                          <div className={`w-3 h-3 rounded-full flex-shrink-0 mr-3 ${getStatusColor(vehicle.status)}`}></div>
                         </div>
                         <p className="text-sm text-gray-500 mb-2 truncate">{vehicle.vehicleNumber}</p>
+                        <div className="flex items-center justify-between mb-1">
                         <div className="text-lg font-bold text-gray-900 mb-2">{vehicle.earnings}</div>
-                        <div className="flex items-center gap-1 text-gray-500 min-w-0">
-                          <MapPin className="w-4 h-4 flex-shrink-0" />
-                          <span className="text-sm truncate">{vehicle.location}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Phone Icon - Now clickable */}
-                    <div className="ml-3 flex-shrink-0">
+                         <div className="ml-3 flex-shrink-0">
                       <button
                         onClick={(e) => handlePhoneClick(vehicle.phone, e)}
                         className="p-2 hover:bg-green-50 rounded-full transition-colors"
@@ -211,6 +208,16 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                         <Phone className="w-5 h-5 text-green-600 hover:text-green-700" />
                       </button>
                     </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-gray-500 min-w-0">
+                          {/* <MapPin className="w-4 h-4 flex-shrink-0" /> */}
+                          <span className="text-sm truncate">{vehicle.vehicleType}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Phone Icon - Now clickable */}
+                   
                   </div>
                 </CardContent>
               </Card>

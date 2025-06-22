@@ -29,6 +29,8 @@ const Index = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const oaId= localStorage.getItem("oaId");
+  console.log("oaId", oaId);
 
   // Check authentication status on component mount
   useEffect(() => {
@@ -40,7 +42,7 @@ const Index = () => {
   const { data: fleetStats } = useQuery({
     queryKey: ['fleetStatus'],
     queryFn: async () => {
-      const response = await apiService.getFleetStatus(13);
+      const response = await apiService.getFleetStatus(oaId);
       return response.data || { onTrip: 0, online: 0, offline: 0 };
     },
     enabled: isLoggedIn, // Only fetch when logged in

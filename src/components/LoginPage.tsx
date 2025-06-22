@@ -32,7 +32,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
     try {
       const response = await apiService.login(phoneNumber, password);
       
-      if (response.token || response.success) {
+      if (response.data.oaId || response.status === "success") {
         toast({
           title: "Login Successful",
           description: "Welcome back!",
