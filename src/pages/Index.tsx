@@ -63,7 +63,7 @@ const Index = () => {
   const totalFleet = fleetData.onTrip + fleetData.online + fleetData.offline;
 
   const DashboardView = () => (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20 md:pb-4">
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-8xl">
           {/* Earnings Section */}
@@ -158,7 +158,7 @@ const Index = () => {
               <div className="grid grid-cols-3 gap-3">
                 <div className="bg-blue-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.onTrip}<span className="text-sm font-normal opacity-90">/{totalFleet}</span></div>
+                    <div className="text-2xl font-bold">{fleetData.onTrip}</div>
                     <div className="text-sm mt-1">On Trip</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
@@ -171,7 +171,7 @@ const Index = () => {
                 
                 <div className="bg-green-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.online}<span className="text-sm font-normal opacity-90">/{totalFleet}</span></div>
+                    <div className="text-2xl font-bold">{fleetData.online}</div>
                     <div className="text-sm mt-1">Online</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">
@@ -184,7 +184,7 @@ const Index = () => {
                 
                 <div className="bg-gray-500 text-white rounded-xl p-4 relative overflow-hidden">
                   <div className="relative z-10">
-                    <div className="text-2xl font-bold">{fleetData.offline}<span className="text-sm font-normal opacity-90">/{totalFleet}</span></div>
+                    <div className="text-2xl font-bold">{fleetData.offline}</div>
                     <div className="text-sm mt-1">Offline</div>
                   </div>
                   <div className="absolute -right-2 -bottom-2 opacity-20">

@@ -20,7 +20,7 @@ interface DriverDetailPageProps {
 
 const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPageProps) => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20 md:pb-4">
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-4xl">
           {/* Header with better alignment */}
@@ -63,27 +63,24 @@ const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPagePro
             <span className="text-sm">4th block, Koramangala</span>
           </div>
 
-          {/* Ledger Balance Card */}
-          <Card className="bg-gray-800 text-white rounded-2xl mb-6 shadow-lg">
+          {/* Ledger Balance Card - Made clickable */}
+          <Card 
+            className="bg-gray-800 text-white rounded-2xl mb-6 shadow-lg cursor-pointer hover:bg-gray-700 transition-colors"
+            onClick={onViewLedger}
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-2xl font-bold">₹549.86</div>
                   <div className="text-sm text-gray-300">Ledger Balance</div>
                 </div>
-                <Button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
-                  onClick={onViewLedger}
-                >
-                  Withdraw
-                </Button>
+                <div className="text-gray-400 hover:text-white transition-colors">
+                  →
+                </div>
               </div>
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
                 <span className="text-sm text-gray-300">Ledger Activity</span>
-                <button 
-                  onClick={onViewLedger}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
+                <button className="text-gray-400 hover:text-white transition-colors">
                   →
                 </button>
               </div>
@@ -96,8 +93,11 @@ const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPagePro
           </div>
 
           <div className="flex gap-4">
-            {/* Updated Earnings Card to match the design */}
-            <Card className="bg-blue-600 text-white rounded-2xl shadow-lg flex-1 relative overflow-hidden">
+            {/* Updated Earnings Card - Made clickable */}
+            <Card 
+              className="bg-blue-600 text-white rounded-2xl shadow-lg flex-1 relative overflow-hidden cursor-pointer hover:bg-blue-700 transition-colors"
+              onClick={onViewLedger}
+            >
               <CardContent className="p-6 relative">
                 <div className="text-2xl font-bold mb-1">₹2,609.00</div>
                 <div className="text-sm text-blue-100 mb-4">Earnings</div>

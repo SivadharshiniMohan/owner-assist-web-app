@@ -83,14 +83,14 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white font-sans pb-20 md:pb-4">
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-8xl">
-          {/* Filter Tabs - Responsive */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          {/* Filter Tabs - Fully Responsive */}
+          <div className="flex flex-wrap gap-2 mb-6 overflow-x-visible">
             <Button
               variant={activeTab === "all" ? "default" : "outline"}
-              className={`rounded-full px-4 py-2 text-sm ${
+              className={`rounded-full px-4 py-2 text-sm whitespace-nowrap ${
                 activeTab === "all" 
                   ? "bg-blue-900 text-white hover:bg-blue-800" 
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
@@ -101,7 +101,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
             </Button>
             <Button
               variant={activeTab === "onTrip" ? "default" : "outline"}
-              className={`rounded-full px-4 py-2 text-sm flex items-center gap-2 ${
+              className={`rounded-full px-4 py-2 text-sm flex items-center gap-2 whitespace-nowrap ${
                 activeTab === "onTrip" 
                   ? "bg-blue-900 text-white hover:bg-blue-800" 
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
@@ -109,11 +109,11 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
               onClick={() => setActiveTab("onTrip")}
             >
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span className="whitespace-nowrap">On Trip ({vehicles.filter(v => v.status === 'ontrip').length})</span>
+              <span>On Trip ({vehicles.filter(v => v.status === 'ontrip').length})</span>
             </Button>
             <Button
               variant={activeTab === "online" ? "default" : "outline"}
-              className={`rounded-full px-4 py-2 text-sm flex items-center gap-2 ${
+              className={`rounded-full px-4 py-2 text-sm flex items-center gap-2 whitespace-nowrap ${
                 activeTab === "online" 
                   ? "bg-blue-900 text-white hover:bg-blue-800" 
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
@@ -121,11 +121,11 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
               onClick={() => setActiveTab("online")}
             >
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="whitespace-nowrap">Online ({vehicles.filter(v => v.status === 'online').length})</span>
+              <span>Online ({vehicles.filter(v => v.status === 'online').length})</span>
             </Button>
             <Button
               variant={activeTab === "offline" ? "default" : "outline"}
-              className={`rounded-full px-4 py-2 text-sm flex items-center gap-2 ${
+              className={`rounded-full px-4 py-2 text-sm flex items-center gap-2 whitespace-nowrap ${
                 activeTab === "offline" 
                   ? "bg-blue-900 text-white hover:bg-blue-800" 
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
@@ -133,12 +133,12 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
               onClick={() => setActiveTab("offline")}
             >
               <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-              <span className="whitespace-nowrap">Offline ({vehicles.filter(v => v.status === 'offline').length})</span>
+              <span>Offline ({vehicles.filter(v => v.status === 'offline').length})</span>
             </Button>
           </div>
 
-          {/* Vehicle List */}
-          <div className="space-y-3 pb-20 md:pb-4 min-h-0 overflow-y-auto">
+          {/* Vehicle List - Fixed scrolling */}
+          <div className="space-y-3 overflow-y-auto max-h-[calc(100vh-200px)] md:max-h-none">
             {filteredVehicles.length > 0 ? filteredVehicles.map((vehicle) => (
               <Card 
                 key={vehicle.id} 

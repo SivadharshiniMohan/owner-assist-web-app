@@ -17,18 +17,18 @@ const RevenueChart = () => {
     },
   });
 
-  // Transform data for chart
+  // Transform data for chart - using count instead of revenue
   const chartData = revenueData?.map((item: any) => ({
     date: new Date(item.date).toLocaleDateString('en-IN', { 
       month: 'short', 
       day: 'numeric' 
     }),
-    revenue: item.revenue || 0
+    count: item.count || 0
   })) || [];
 
   const chartConfig = {
-    revenue: {
-      label: "Daily Revenue",
+    count: {
+      label: "Daily Count",
       color: "hsl(var(--chart-1))",
     },
   };
@@ -37,7 +37,7 @@ const RevenueChart = () => {
     return (
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle>Trips Revenue Trend</CardTitle>
+          <CardTitle>Trips Count Trend</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex items-center justify-center">
@@ -51,21 +51,21 @@ const RevenueChart = () => {
   return (
     <Card className="mb-4">
       <CardHeader>
-        <CardTitle>Trips Revenue Trend</CardTitle>
+        <CardTitle>Trips Count Trend</CardTitle>
       </CardHeader>
-      <CardContent className="pl-2">
+      <CardContent className="pl-0">
         <ChartContainer config={chartConfig} className="h-64 w-full">
           <AreaChart data={chartData} margin={{ left: 0, right: 12, top: 12, bottom: 12 }}>
             <defs>
-              <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillCount" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-revenue)"
+                  stopColor="var(--color-count)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-revenue)"
+                  stopColor="var(--color-count)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -80,19 +80,19 @@ const RevenueChart = () => {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => `₹${Number(value).toLocaleString()}`}
+              tickFormatter={(value) => `${Number(value).toLocaleString()}`}
             />
             <ChartTooltip 
               content={<ChartTooltipContent 
-                formatter={(value) => [`₹${Number(value).toLocaleString()}`, "Daily Revenue"]}
+                formatter={(value) => [`${Number(value).toLocaleString()}`, "Daily Count"]}
               />} 
             />
             <Area
-              dataKey="revenue"
+              dataKey="count"
               type="monotone"
-              fill="url(#fillRevenue)"
+              fill="url(#fillCount)"
               fillOpacity={0.4}
-              stroke="var(--color-revenue)"
+              stroke="var(--color-count)"
               strokeWidth={2}
             />
           </AreaChart>
