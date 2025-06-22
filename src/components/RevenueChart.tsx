@@ -75,17 +75,16 @@ const RevenueChart = () => {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => `₹${value.toLocaleString()}`}
+              tickFormatter={(value) => `₹${Number(value).toLocaleString()}`}
             />
             <ChartTooltip 
               content={<ChartTooltipContent 
-                formatter={(value) => [`₹${value.toLocaleString()}`, "Daily Revenue"]}
+                formatter={(value) => [`₹${Number(value).toLocaleString()}`, "Daily Revenue"]}
               />} 
             />
             <Area
