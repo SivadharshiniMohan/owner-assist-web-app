@@ -118,7 +118,8 @@ const Index = () => {
                   {Array.from({ length: 35 }, (_, i) => {
                     const date = new Date(2024, 5, i - 5); // June 2024
                     const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
-                    const isSelecte      const hasEarnings = dateEarnings[format(date, "yyyy-MM-dd")];
+                    const isSelected = format(date, "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd");
+                    const hasEarnings = dateEarnings[format(date, "yyyy-MM-dd")];
                     
                     return (
                       <button
