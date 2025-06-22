@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { apiService } from "@/services/apiService";
+import { makePhoneCall } from "@/utils/phoneUtils";
 
 interface Vehicle {
   id: number;
@@ -28,12 +30,8 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
     queryKey: ['fleetList', activeTab],
     queryFn: async () => {
       const filterParam = activeTab === "onTrip" ? "onTrip" : activeTab;
-      const response = await fetch(`https://book.ecargo.co.in/v2/oa/stats/fleetList?oaId=13&filterBy=${filterParam}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch fleet list');
-      }
-      const data = await response.json();
-      return data.data || [];
+      const response = await apiService.getFleetList(13, filterParam);
+      return response.data || [];
     },
   });
 
@@ -47,8 +45,8 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
     status: item.status?.toLowerCase() === "ontrip" ? "ontrip" : 
             item.status?.toLowerCase() === "online" ? "online" : "offline",
     rating: 4.5, // Mock rating since not in API
-    phone: "+91 9876543210", // Mock phone since not in API
-    imageUrl: item.image || item.imageUrl // Get image from API
+    phone: item.phoneNumber || "+91 9876543210", // Use phoneNumber from API
+    imageUrl: item.imageUrl || item.image // Get image from API
   })) || [];
 
   const getStatusColor = (status: string) => {
@@ -69,6 +67,11 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
   };
 
   const filteredVehicles = getFilteredVehicles();
+
+  const handlePhoneClick = (phoneNumber: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    makePhoneCall(phoneNumber);
+  };
 
   if (isLoading) {
     return (
@@ -198,9 +201,15 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                       </div>
                     </div>
                     
-                    {/* Phone Icon */}
+                    {/* Phone Icon - Now clickable */}
                     <div className="ml-3 flex-shrink-0">
-                      <Phone className="w-5 h-5 text-gray-400" />
+                      <button
+                        onClick={(e) => handlePhoneClick(vehicle.phone, e)}
+                        className="p-2 hover:bg-green-50 rounded-full transition-colors"
+                        title={`Call ${vehicle.phone}`}
+                      >
+                        <Phone className="w-5 h-5 text-green-600 hover:text-green-700" />
+                      </button>
                     </div>
                   </div>
                 </CardContent>

@@ -3,17 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { apiService } from "@/services/apiService";
 
 const RevenueChart = () => {
   const { data: revenueData, isLoading } = useQuery({
     queryKey: ['revenue'],
     queryFn: async () => {
-      const response = await fetch('https://book.ecargo.co.in/v2/admin/stats/revenue?startDate=2025-06-01&endDate=2025-06-20&zones=1%2C2%2C3');
-      if (!response.ok) {
-        throw new Error('Failed to fetch revenue data');
-      }
-      const data = await response.json();
-      return data.data || [];
+      const response = await apiService.getRevenue('2025-06-01', '2025-06-20', '1,2,3');
+      return response.data || [];
     },
   });
 

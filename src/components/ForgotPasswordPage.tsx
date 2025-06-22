@@ -4,33 +4,51 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiService } from "@/services/apiService";
 
 interface ForgotPasswordPageProps {
-  onContinue: (phoneNumber: string, isNewUser: boolean) => void;
+  onContinue: (phoneNumber: string, isNewUser: boolean) => void;  
 }
 
 const ForgotPasswordPage = ({ onContinue }: ForgotPasswordPageProps) => {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const forgotPasswordMutation = useMutation({
-    mutationFn: async (number: string) => {
-      const response = await fetch('/api/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number })
+  const handleContinue = async () => {
+    if (phoneNumber.length !== 10) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const response = await apiService.isNewUser(phoneNumber);
+      
+      // Check if user is new based on API response
+      const isNewUser = response.isNew || response.data?.isNew || false;
+      
+      if (isNewUser) {
+        toast({
+          title: "New User",
+          description: "This phone number is not registered. Please sign up first.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "User Found",
+          description: "Redirecting to OTP verification...",
+          variant: "default",
+        });
+        onContinue(phoneNumber, isNewUser);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to verify phone number. Please try again.",
+        variant: "destructive",
       });
-      if (!response.ok) throw new Error('Failed to send request');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      onContinue(phoneNumber, data.isNewUser);
-    }
-  });
-
-  const handleContinue = () => {
-    if (phoneNumber.length === 10) {
-      forgotPasswordMutation.mutate(phoneNumber);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -40,6 +58,7 @@ const ForgotPasswordPage = ({ onContinue }: ForgotPasswordPageProps) => {
         <CardContent className="p-6">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Forgot Password</h1>
+            <p className="text-gray-600">Enter your phone number to continue</p>
           </div>
 
           <div className="space-y-6">
@@ -59,9 +78,9 @@ const ForgotPasswordPage = ({ onContinue }: ForgotPasswordPageProps) => {
             <Button 
               onClick={handleContinue}
               className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg"
-              disabled={phoneNumber.length !== 10 || forgotPasswordMutation.isPending}
+              disabled={phoneNumber.length !== 10 || isLoading}
             >
-              {forgotPasswordMutation.isPending ? "Loading..." : "Continue"}
+              {isLoading ? "Checking..." : "Continue"}
             </Button>
           </div>
         </CardContent>

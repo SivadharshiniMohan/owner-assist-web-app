@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { apiService } from "@/services/apiService";
 import ForgotPasswordPage from "./ForgotPasswordPage";
 import OTPVerificationPage from "./OTPVerificationPage";
 import ResetPasswordPage from "./ResetPasswordPage";
@@ -17,14 +19,43 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
   const [password, setPassword] = useState("");
   const [currentView, setCurrentView] = useState<"login" | "forgot" | "otp" | "reset">("login");
   const [forgotPhoneNumber, setForgotPhoneNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleLogin = () => {
-    if (phoneNumber.length === 10 && password.length > 0) {
-      onLogin();
+  const handleLogin = async () => {
+    if (phoneNumber.length !== 10 || password.length === 0) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const response = await apiService.login(phoneNumber, password);
+      
+      if (response.token || response.success) {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+          variant: "default",
+        });
+        onLogin();
+      } else {
+        toast({
+          title: "Login Failed",
+          description: response.message || "Invalid credentials",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Login Error",
+        description: "Please check your credentials and try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleForgotPasswordContinue = (phone: string, isNewUser: boolean) => {
+  const handleForgotPasswordContinue = async (phone: string, isNewUser: boolean) => {
     setForgotPhoneNumber(phone);
     if (!isNewUser) {
       setCurrentView("otp");
@@ -37,6 +68,15 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
 
   const handleResetSuccess = () => {
     setCurrentView("login");
+  };
+
+  const handleLogout = () => {
+    apiService.removeAuthToken();
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out",
+      variant: "default",
+    });
   };
 
   if (currentView === "forgot") {
@@ -52,7 +92,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-600 via-green-700 to-green-800 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardContent className="p-6">
           <div className="text-center mb-6">
@@ -86,7 +126,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
             <div className="text-right">
               <button 
                 onClick={() => setCurrentView("forgot")}
-                className="text-sm text-blue-600 hover:text-blue-700"
+                className="text-sm text-green-600 hover:text-green-700"
               >
                 Forgot Password?
               </button>
@@ -94,11 +134,22 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
 
             <Button 
               onClick={handleLogin}
-              className="w-full bg-blue-600 hover:bg-blue-700"
-              disabled={phoneNumber.length !== 10 || password.length === 0}
+              className="w-full bg-green-600 hover:bg-green-700"
+              disabled={phoneNumber.length !== 10 || password.length === 0 || isLoading}
             >
-              Login
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
+
+            {/* Logout button for testing - only show if token exists */}
+            {apiService.isAuthenticated() && (
+              <Button 
+                onClick={handleLogout}
+                variant="outline"
+                className="w-full mt-2"
+              >
+                Logout (Test)
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>

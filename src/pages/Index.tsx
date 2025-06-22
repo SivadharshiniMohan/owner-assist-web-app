@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { apiService } from "@/services/apiService";
 import Sidebar from "@/components/Sidebar";
 import FleetPage from "@/components/FleetPage";
 import DriverDetailPage from "@/components/DriverDetailPage";
@@ -29,17 +30,20 @@ const Index = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  // Fetch fleet status
+  // Check authentication status on component mount
+  useEffect(() => {
+    const isAuthenticated = apiService.isAuthenticated();
+    setIsLoggedIn(isAuthenticated);
+  }, []);
+
+  // Fetch fleet status using API service
   const { data: fleetStats } = useQuery({
     queryKey: ['fleetStatus'],
     queryFn: async () => {
-      const response = await fetch('https://book.ecargo.co.in/v2/oa/stats/fleetStatus?oaId=13');
-      if (!response.ok) {
-        throw new Error('Failed to fetch fleet status');
-      }
-      const data = await response.json();
-      return data.data || { onTrip: 0, online: 0, offline: 0 };
+      const response = await apiService.getFleetStatus(13);
+      return response.data || { onTrip: 0, online: 0, offline: 0 };
     },
+    enabled: isLoggedIn, // Only fetch when logged in
   });
 
   // Mock data for different dates
@@ -114,8 +118,7 @@ const Index = () => {
                   {Array.from({ length: 35 }, (_, i) => {
                     const date = new Date(2024, 5, i - 5); // June 2024
                     const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
-                    const isSelected = format(date, "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd");
-                    const hasEarnings = dateEarnings[format(date, "yyyy-MM-dd")];
+                    const isSelecte      const hasEarnings = dateEarnings[format(date, "yyyy-MM-dd")];
                     
                     return (
                       <button
