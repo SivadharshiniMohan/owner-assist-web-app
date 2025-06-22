@@ -53,9 +53,9 @@ const RevenueChart = () => {
       <CardHeader>
         <CardTitle>Trips Revenue Trend</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pl-2">
         <ChartContainer config={chartConfig} className="h-64 w-full">
-          <AreaChart data={chartData}>
+          <AreaChart data={chartData} margin={{ left: 0, right: 12, top: 12, bottom: 12 }}>
             <defs>
               <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
                 <stop

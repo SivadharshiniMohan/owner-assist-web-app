@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ForgotPasswordPage from "./ForgotPasswordPage";
+import OTPVerificationPage from "./OTPVerificationPage";
+import ResetPasswordPage from "./ResetPasswordPage";
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -12,12 +15,41 @@ interface LoginPageProps {
 const LoginPage = ({ onLogin }: LoginPageProps) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [currentView, setCurrentView] = useState<"login" | "forgot" | "otp" | "reset">("login");
+  const [forgotPhoneNumber, setForgotPhoneNumber] = useState("");
 
   const handleLogin = () => {
     if (phoneNumber.length === 10 && password.length > 0) {
       onLogin();
     }
   };
+
+  const handleForgotPasswordContinue = (phone: string, isNewUser: boolean) => {
+    setForgotPhoneNumber(phone);
+    if (!isNewUser) {
+      setCurrentView("otp");
+    }
+  };
+
+  const handleOTPVerified = () => {
+    setCurrentView("reset");
+  };
+
+  const handleResetSuccess = () => {
+    setCurrentView("login");
+  };
+
+  if (currentView === "forgot") {
+    return <ForgotPasswordPage onContinue={handleForgotPasswordContinue} />;
+  }
+
+  if (currentView === "otp") {
+    return <OTPVerificationPage phoneNumber={forgotPhoneNumber} onVerified={handleOTPVerified} />;
+  }
+
+  if (currentView === "reset") {
+    return <ResetPasswordPage phoneNumber={forgotPhoneNumber} onSuccess={handleResetSuccess} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center p-4">
@@ -50,6 +82,16 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            
+            <div className="text-right">
+              <button 
+                onClick={() => setCurrentView("forgot")}
+                className="text-sm text-blue-600 hover:text-blue-700"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
             <Button 
               onClick={handleLogin}
               className="w-full bg-blue-600 hover:bg-blue-700"
