@@ -15,6 +15,9 @@ interface Vehicle {
   earnings: string;
   location: string;
   status: "ontrip" | "online" | "offline";
+  vehicleType:string;
+  latitude:any;
+  longitude:any
 }
 
 interface DriverDetailPageProps {

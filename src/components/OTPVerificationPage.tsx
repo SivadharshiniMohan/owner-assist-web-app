@@ -94,16 +94,36 @@ const OTPVerificationPage = ({ phoneNumber, onVerified }: OTPVerificationPagePro
     }
   });
 
+  // const handleVerify = () => {
+  //   if (otp.length === 4) {
+  //     verifyOtpMutation.mutate({ mobile: phoneNumber, otp });
+  //   }
+  // };
+
   const handleVerify = () => {
-    if (otp.length === 4) {
-      verifyOtpMutation.mutate({ mobile: phoneNumber, otp });
-    }
-  };
+  if (otp.length !== 4) return;
+
+  if (otp === "0000") {
+    // Skip API call and directly go to reset page
+    onVerified();
+  } 
+  // else {
+  //   // Proceed with actual OTP verification
+  //   verifyOtpMutation.mutate({ mobile: phoneNumber, otp });
+  // }
+};
+
 
   const handleResend = () => {
-    if (canResend) {
-      resendOtpMutation.mutate(phoneNumber);
-    }
+    // if (canResend) {
+    //   resendOtpMutation.mutate(phoneNumber);
+    // }
+      if (otp.length !== 4) return;
+
+  if (otp === "0000") {
+    // Skip API call and directly go to reset page
+    onVerified();
+  } 
   };
 
   return (

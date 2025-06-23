@@ -25,9 +25,11 @@ interface Vehicle {
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  console.log("isLoggedIn", isLoggedIn);
   const [currentView, setCurrentView] = useState("dashboard");
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
+
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const oaId= localStorage.getItem("oaId");
   // Check authentication status on component mount
@@ -46,6 +48,8 @@ const Index = () => {
     enabled: isLoggedIn, // Only fetch when logged in
   });
 
+
+
   // Mock data for different dates
   const dateEarnings: { [key: string]: string } = {
     [format(new Date(), "yyyy-MM-dd")]: "₹56,000.00",
@@ -54,6 +58,24 @@ const Index = () => {
     "2024-06-15": "₹51,800.00",
     "2024-06-14": "₹47,300.00",
   };
+
+const { data: earningsData = [] } = useQuery({
+  queryKey: ['fleetList', 'all'],
+  queryFn: async () => {
+    if (!oaId) return [];
+    const response = await apiService.getFleetList(oaId, "all"); // use "all" as string
+    return response?.data || [];
+  },
+  enabled: isLoggedIn && !!oaId, // ensure oaId is available and user is logged in
+});
+
+
+console.log("log....",earningsData)
+const totalEarnings = earningsData.reduce((sum: number, vehicle: Vehicle) => {
+  const earning = parseFloat(String(vehicle.earnings).replace(/[^\d.-]/g, "")) || 0;
+  return sum + earning;
+}, 0);
+
 
   const getEarningsForDate = (date: Date) => {
     const dateStr = format(date, "yyyy-MM-dd");
@@ -74,7 +96,7 @@ const Index = () => {
           {/* Earnings Section */}
           <div className="mb-3">
             <div className="text-sm text-gray-600 mb-1">Today's Earnings</div>
-            <div className="text-3xl font-bold text-black mb-2">{currentEarnings}</div>
+            <div className="text-3xl font-bold text-black mb-2">{totalEarnings}</div>
             {/* <div className="flex items-center gap-2 mb-3">
               <button 
                 onClick={() => setShowCalendar(!showCalendar)}
@@ -211,7 +233,7 @@ const Index = () => {
   );
 
   // Handle login
-  if (!isLoggedIn) {
+  if (!isLoggedIn ) {
     return <LoginPage onLogin={() => setIsLoggedIn(true)} />;
   }
 

@@ -34,7 +34,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
       const filterParam = activeTab === "onTrip" ? "onTrip" : activeTab;
       const response = await apiService.getFleetList(oaId, filterParam);
       return response.data || [];
-    },
+    },})
 
 
   // Transform API data to match our interface
