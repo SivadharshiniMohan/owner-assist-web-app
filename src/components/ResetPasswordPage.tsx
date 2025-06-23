@@ -35,13 +35,17 @@ const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) =
       return response.json();
     },
     onSuccess: (data) => {
+      console.log('Reset password response:', data);
       if (data.success) {
         toast({
           title: "Password Reset Successful",
           description: "Your password has been reset successfully. Please login with your new password.",
           variant: "default",
         });
-        onSuccess();
+        // Redirect to login page after showing success message
+        setTimeout(() => {
+          onSuccess();
+        }, 1500);
       } else {
         toast({
           title: "Password Reset Failed",
@@ -50,7 +54,8 @@ const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) =
         });
       }
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Reset password error:', error);
       toast({
         title: "Error",
         description: "An error occurred while resetting your password. Please try again.",
@@ -61,6 +66,7 @@ const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) =
 
   const handleResetPassword = () => {
     if (password && password === confirmPassword) {
+      console.log('Attempting to reset password for:', phoneNumber);
       resetPasswordMutation.mutate({ number: phoneNumber, password });
     }
   };
