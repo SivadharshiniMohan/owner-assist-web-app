@@ -1,6 +1,12 @@
 
 import { ENV } from '@/config/env';
 
+interface UserData {
+  phoneNumber: string;
+  name: string;
+  oaId: number;
+}
+
 class ApiService {
   private baseURL = ENV.API_BASE_URL;
 
@@ -39,32 +45,98 @@ class ApiService {
       body: formData.toString(),
     });
     
-    if (response.token) {
-      this.setAuthToken(response.token);
+    if (response.data && response.status === 'success') {
+      // Store user data along with token
+      this.setUserData(response.data);
+      this.setAuthToken('dummy_token'); // Since API doesn't return token, using dummy
     }
     
     return response;
   }
 
   async isNewUser(phoneNumber: string) {
-    return this.request<any>(`/v2/oa/isNew?phoneNumber=${phoneNumber}`);
+    const formData = new URLSearchParams();
+    formData.append('phoneNumber', phoneNumber);
+
+    return this.request<any>('/v2/oa/isNew', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
   }
 
   // Fleet methods
   async getFleetStatus(oaId: number) {
-    return this.request<any>(`/v2/oa/stats/fleetStatus?oaId=${oaId}`);
+    const formData = new URLSearchParams();
+    formData.append('oaId', oaId.toString());
+
+    return this.request<any>('/v2/oa/stats/fleetStatus', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
   }
 
   async getFleetList(oaId: number, filterBy: string) {
-    return this.request<any>(`/v2/oa/stats/fleetList?oaId=${oaId}&filterBy=${filterBy}`);
+    const formData = new URLSearchParams();
+    formData.append('oaId', oaId.toString());
+    formData.append('filterBy', filterBy);
+
+    return this.request<any>('/v2/oa/stats/fleetList', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
   }
 
   async getRevenue(startDate: string, endDate: string, zones: string) {
-    return this.request<any>(`/v2/admin/stats/revenue?startDate=${startDate}&endDate=${endDate}&zones=${zones}`);
+    const formData = new URLSearchParams();
+    formData.append('startDate', startDate);
+    formData.append('endDate', endDate);
+    formData.append('zones', zones);
+
+    return this.request<any>('/v2/admin/stats/revenue', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
   }
 
   async getWalletTransactions(id: number, pageNo: number, pageSize: number) {
-    return this.request<any>(`/v2/driver/walletTxns?id=${id}&pageNo=${pageNo}&pageSize=${pageSize}`);
+    const formData = new URLSearchParams();
+    formData.append('id', id.toString());
+    formData.append('pageNo', pageNo.toString());
+    formData.append('pageSize', pageSize.toString());
+
+    return this.request<any>('/v2/driver/walletTxns', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
+  }
+
+  // User data management
+  setUserData(userData: UserData) {
+    localStorage.setItem('user_data', JSON.stringify(userData));
+  }
+
+  getUserData(): UserData | null {
+    const userData = localStorage.getItem('user_data');
+    return userData ? JSON.parse(userData) : null;
+  }
+
+  removeUserData() {
+    localStorage.removeItem('user_data');
   }
 
   // Token management
@@ -102,6 +174,7 @@ class ApiService {
 
   removeAuthToken() {
     localStorage.removeItem('auth_token');
+    this.removeUserData();
   }
 
   isAuthenticated(): boolean {

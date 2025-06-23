@@ -12,6 +12,7 @@ import LoginPage from "@/components/LoginPage";
 import CalendarView from "@/components/CalendarView";
 import LedgerPage from "@/components/LedgerPage";
 import RevenueChart from "@/components/RevenueChart";
+import Header from "@/components/Header";
 import { format } from "date-fns";
 
 interface Vehicle {
@@ -24,7 +25,7 @@ interface Vehicle {
 }
 
 const Index = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null = loading
   const [currentView, setCurrentView] = useState("dashboard");
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -36,14 +37,18 @@ const Index = () => {
     setIsLoggedIn(isAuthenticated);
   }, []);
 
+  // Get user data for API calls
+  const userData = apiService.getUserData();
+  const oaId = userData?.oaId || 13;
+
   // Fetch fleet status using API service
   const { data: fleetStats } = useQuery({
     queryKey: ['fleetStatus'],
     queryFn: async () => {
-      const response = await apiService.getFleetStatus(13);
+      const response = await apiService.getFleetStatus(oaId);
       return response.data || { onTrip: 0, online: 0, offline: 0 };
     },
-    enabled: isLoggedIn, // Only fetch when logged in
+    enabled: isLoggedIn === true, // Only fetch when logged in
   });
 
   // Mock data for different dates
@@ -68,6 +73,7 @@ const Index = () => {
 
   const DashboardView = () => (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-4">
+      <Header />
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-8xl">
           {/* Earnings Section */}
@@ -210,6 +216,18 @@ const Index = () => {
   );
 
   // Handle login
+  if (isLoggedIn === null) {
+    // Show loading state while checking authentication
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isLoggedIn) {
     return <LoginPage onLogin={() => setIsLoggedIn(true)} />;
   }
@@ -219,29 +237,50 @@ const Index = () => {
     switch (currentView) {
       case "fleet":
         return (
-          <FleetPage 
-            onVehicleSelect={(vehicle) => {
-              setSelectedVehicle(vehicle);
-              setCurrentView("vehicle");
-            }} 
-          />
+          <>
+            <Header />
+            <FleetPage 
+              onVehicleSelect={(vehicle) => {
+                setSelectedVehicle(vehicle);
+                setCurrentView("vehicle");
+              }} 
+            />
+          </>
         );
       case "profile":
-        return <ProfilePage />;
+        return (
+          <>
+            <Header />
+            <ProfilePage />
+          </>
+        );
       case "vehicle":
         return selectedVehicle ? (
-          <DriverDetailPage 
-            vehicle={selectedVehicle}
-            onBack={() => setCurrentView("fleet")}
-            onViewLedger={() => setCurrentView("ledger")}
-          />
+          <>
+            <Header />
+            <DriverDetailPage 
+              vehicle={selectedVehicle}
+              onBack={() => setCurrentView("fleet")}
+              onViewLedger={() => setCurrentView("ledger")}
+            />
+          </>
         ) : (
           <DashboardView />
         );
       case "calendar":
-        return <CalendarView onBack={() => setCurrentView("dashboard")} />;
+        return (
+          <>
+            <Header />
+            <CalendarView onBack={() => setCurrentView("dashboard")} />
+          </>
+        );
       case "ledger":
-        return <LedgerPage onBack={() => setCurrentView("vehicle")} />;
+        return (
+          <>
+            <Header />
+            <LedgerPage onBack={() => setCurrentView("vehicle")} />
+          </>
+        );
       default:
         return <DashboardView />;
     }

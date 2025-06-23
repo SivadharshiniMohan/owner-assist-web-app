@@ -2,8 +2,28 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User, Phone, Mail, MapPin, Settings, LogOut } from "lucide-react";
+import { apiService } from "@/services/apiService";
+import { useEffect, useState } from "react";
+
+interface UserData {
+  phoneNumber: string;
+  name: string;
+  oaId: number;
+}
 
 const ProfilePage = () => {
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    const data = apiService.getUserData();
+    setUserData(data);
+  }, []);
+
+  const handleLogout = () => {
+    apiService.removeAuthToken();
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="md:ml-64 pt-4 md:pt-0">
@@ -22,7 +42,9 @@ const ProfilePage = () => {
                   <User className="w-10 h-10 text-blue-600" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Rajesh Kumar</h2>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {userData?.name || 'User Name'}
+                  </h2>
                   <p className="text-gray-600">Fleet Owner</p>
                   <p className="text-sm text-green-600">Verified Account</p>
                 </div>
@@ -33,7 +55,9 @@ const ProfilePage = () => {
                   <Phone className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm text-gray-600">Phone Number</p>
-                    <p className="font-medium">+91 9876543210</p>
+                    <p className="font-medium">
+                      {userData?.phoneNumber ? `+91 ${userData.phoneNumber}` : '+91 XXXXXXXXXX'}
+                    </p>
                   </div>
                 </div>
 
@@ -41,7 +65,7 @@ const ProfilePage = () => {
                   <Mail className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-medium">rajesh.kumar@email.com</p>
+                    <p className="font-medium">Not Available</p>
                   </div>
                 </div>
 
@@ -49,7 +73,7 @@ const ProfilePage = () => {
                   <MapPin className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm text-gray-600">Address</p>
-                    <p className="font-medium">New Delhi, India</p>
+                    <p className="font-medium">Not Available</p>
                   </div>
                 </div>
               </div>
@@ -70,7 +94,10 @@ const ProfilePage = () => {
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-all duration-200">
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-all duration-200"
+              onClick={handleLogout}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
