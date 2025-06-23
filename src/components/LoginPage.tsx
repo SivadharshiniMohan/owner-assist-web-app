@@ -69,7 +69,16 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
   };
 
   const handleResetSuccess = () => {
+    // Reset all form states and return to login
     setCurrentView("login");
+    setForgotPhoneNumber("");
+    setPhoneNumber("");
+    setPassword("");
+    toast({
+      title: "Password Reset Complete",
+      description: "You can now login with your new password.",
+      variant: "default",
+    });
   };
 
   const handleLogout = () => {
