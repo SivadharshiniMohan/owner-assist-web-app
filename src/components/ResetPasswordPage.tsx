@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 
 interface ResetPasswordPageProps {
@@ -17,21 +18,44 @@ const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) =
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { toast } = useToast();
 
   const resetPasswordMutation = useMutation({
     mutationFn: async (data: { number: string; password: string }) => {
+      const formData = new URLSearchParams();
+      formData.append('number', data.number);
+      formData.append('password', data.password);
+
       const response = await fetch('/api/reset-password', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
       });
       if (!response.ok) throw new Error('Failed to reset password');
       return response.json();
     },
     onSuccess: (data) => {
       if (data.success) {
+        toast({
+          title: "Password Reset Successful",
+          description: "Your password has been reset successfully. Please login with your new password.",
+          variant: "default",
+        });
         onSuccess();
+      } else {
+        toast({
+          title: "Password Reset Failed",
+          description: data.message || "Failed to reset password. Please try again.",
+          variant: "destructive",
+        });
       }
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "An error occurred while resetting your password. Please try again.",
+        variant: "destructive",
+      });
     }
   });
 
@@ -59,7 +83,7 @@ const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) =
                   placeholder="Enter the password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-2 h-12 border-gray-300 rounded-lg pr-10 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300"
+                  className="mt-2 h-12 border-gray-300 rounded-lg pr-10"
                 />
                 <button
                   type="button"
@@ -80,7 +104,7 @@ const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) =
                   placeholder="Enter the confirm password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="mt-2 h-12 border-gray-300 rounded-lg pr-10 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300"
+                  className="mt-2 h-12 border-gray-300 rounded-lg pr-10"
                 />
                 <button
                   type="button"
@@ -102,7 +126,12 @@ const ResetPasswordPage = ({ phoneNumber, onSuccess }: ResetPasswordPageProps) =
 
             <div className="text-center pt-4">
               <span className="text-gray-600">Already have an account? </span>
-              <button className="text-green-600 font-medium hover:text-green-700">Sign In</button>
+              <button 
+                onClick={onSuccess}
+                className="text-green-600 font-medium hover:text-green-700"
+              >
+                Sign In
+              </button>
             </div>
           </div>
         </CardContent>
