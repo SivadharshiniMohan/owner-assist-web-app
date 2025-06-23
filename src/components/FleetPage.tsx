@@ -6,6 +6,7 @@ import { MapPin, Phone } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { apiService } from "@/services/apiService";
 import { makePhoneCall } from "@/utils/phoneUtils";
+import Header from "./Header"; // Assuming you have a Header component
 
 interface Vehicle {
   id: number;
@@ -34,9 +35,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
       const response = await apiService.getFleetList(oaId, filterParam);
       return response.data || [];
     },
-  });
 
-  console.log("Fleet List:", fleetList);
 
   // Transform API data to match our interface
   const vehicles: Vehicle[] = fleetList?.map((item: any) => ({
@@ -46,6 +45,8 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
     earnings: item.earnings, 
     // location: "4th block, Koramangala", // Mock location since not in API
     vehicleType:item.vehicleTypeName,
+    latitude:item.currentLatitude,
+    longitude:item.currentLongitude,
     status: item.status?.toLowerCase() === "ontrip" ? "ontrip" : 
             item.status?.toLowerCase() === "online" ? "online" : "offline",
     rating: 4.5, // Mock rating since not in API
@@ -53,9 +54,10 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
     imageUrl: item.imageUrl || item.image // Get image from API
   })) || [];
 
+
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "ontrip": return "bg-blue-500";
+      case "ontrip": return "bg-green-500";
       case "online": return "bg-green-500";
       case "offline": return "bg-gray-400";
       default: return "bg-gray-400";
@@ -93,6 +95,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
 
   return (
     <div className="min-h-screen bg-white font-sans pb-20 md:pb-4">
+      <Header/>
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-8xl">
           {/* Filter Tabs - Fully Responsive */}
@@ -210,9 +213,17 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                     </div>
                         </div>
                         <div className="flex items-center gap-1 text-gray-500 min-w-0">
-                          {/* <MapPin className="w-4 h-4 flex-shrink-0" /> */}
-                          <span className="text-sm truncate">{vehicle.vehicleType}</span>
-                        </div>
+                          <MapPin className="w-4 h-4 flex-shrink-0" />
+   <div className="flex items-center gap-1 text-gray-500 min-w-0">
+                          <a
+                            className="text-sm truncate text-green-600 hover:underline cursor-pointer"
+                            href={`https://www.google.com/maps/search/?api=1&query=${vehicle.latitude},${vehicle.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={e => e.stopPropagation()}
+                          >
+                            Find a driver
+                          </a> </div>                        </div>
                       </div>
                     </div>
                     

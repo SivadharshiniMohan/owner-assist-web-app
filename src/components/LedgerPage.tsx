@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import Header from "./Header";
 
 interface LedgerPageProps {
   onBack: () => void;
@@ -73,7 +74,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
     const lowerType = type?.toLowerCase() || "";
     const iconClass = "w-8 h-8 rounded-full flex items-center justify-center";
 
-    if (lowerType.includes("commission")) return <div className={`${iconClass} bg-blue-100`}>💼</div>;
+    if (lowerType.includes("commission")) return <div className={`${iconClass} bg-green-100`}>💼</div>;
     if (lowerType.includes("penalty") || lowerType.includes("fine")) return <div className={`${iconClass} bg-red-100`}>⚠️</div>;
     if (lowerType.includes("recharge") || lowerType.includes("credit")) return <div className={`${iconClass} bg-green-100`}>➕</div>;
     if (lowerType.includes("withdraw")) return <div className={`${iconClass} bg-orange-100`}>➖</div>;
@@ -104,6 +105,7 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
 
   return (
     <div className="min-h-screen bg-white font-sans">
+            <Header/>
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-8xl">
           <div className="flex items-center gap-3 mb-6">
@@ -115,8 +117,10 @@ const LedgerPage = ({ onBack }: LedgerPageProps) => {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            
+              <h1 className="text-lg font-semibold text-gray-900">Transaction Ledger</h1>
+          
           </div>
+    
 
           <div className="text-sm text-gray-500 mb-4">Recent Transactions</div>
 

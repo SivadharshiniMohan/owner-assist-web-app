@@ -11,8 +11,8 @@ import ProfilePage from "@/components/ProfilePage";
 import LoginPage from "@/components/LoginPage";
 import CalendarView from "@/components/CalendarView";
 import LedgerPage from "@/components/LedgerPage";
-import RevenueChart from "@/components/RevenueChart";
 import { format } from "date-fns";
+import Header from "@/components/Header";
 
 interface Vehicle {
   id: number;
@@ -30,8 +30,6 @@ const Index = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const oaId= localStorage.getItem("oaId");
-  console.log("oaId", oaId);
-
   // Check authentication status on component mount
   useEffect(() => {
     const isAuthenticated = apiService.isAuthenticated();
@@ -70,13 +68,14 @@ const Index = () => {
 
   const DashboardView = () => (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-4">
+      <Header/>
       <div className="md:ml-64 pt-4 md:pt-0">
         <div className="container mx-auto px-4 py-4 max-w-8xl">
           {/* Earnings Section */}
           <div className="mb-3">
             <div className="text-sm text-gray-600 mb-1">Today's Earnings</div>
             <div className="text-3xl font-bold text-black mb-2">{currentEarnings}</div>
-            <div className="flex items-center gap-2 mb-3">
+            {/* <div className="flex items-center gap-2 mb-3">
               <button 
                 onClick={() => setShowCalendar(!showCalendar)}
                 className="flex items-center text-sm text-gray-500 hover:text-green-600 transition-colors"
@@ -84,7 +83,7 @@ const Index = () => {
                 <Calendar className="w-4 h-4 mr-2" />
                 {currentDateString}
               </button>
-            </div>
+            </div> */}
             <hr className="border-gray-200 mb-4" />
           </div>
 
@@ -205,7 +204,7 @@ const Index = () => {
           </div>
 
           {/* Revenue Chart */}
-          <RevenueChart />
+          {/* <RevenueChart /> */}
         </div>
       </div>
     </div>

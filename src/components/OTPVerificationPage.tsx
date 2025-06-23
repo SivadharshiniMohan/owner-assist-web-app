@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useMutation } from "@tanstack/react-query";
 
-const OTP_AUTH_KEY = "YOUR_MSG91_AUTH_KEY"; // Replace with actual key
+const OTP_AUTH_KEY = "433024Acptrq5KdUUc671b9bcbP1"; // Replace with actual key
 
 interface OTPVerificationPageProps {
   phoneNumber: string;

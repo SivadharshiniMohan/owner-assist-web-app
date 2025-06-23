@@ -26,7 +26,7 @@ const RevenueChart = () => {
   const chartConfig = {
     count: {
       label: "Daily Count",
-      color: "#3B82F6", // Blue color
+      color: "#3B82F6", // green color
     },
   };
 

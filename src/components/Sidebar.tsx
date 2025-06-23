@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Home, Truck, User, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logo from "./../../public/e-cargo-logo.png"
 
 interface SidebarProps {
   currentView: string;
@@ -35,7 +36,7 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
           variant={activeItem === item.id ? "default" : "ghost"}
           className={cn(
             "w-full justify-start gap-3 h-12",
-            activeItem === item.id ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+            activeItem === item.id ? "bg-green-600 text-white hover:bg-green-700" : "text-gray-600 hover:text-green-600 hover:bg--50"
           )}
           onClick={() => onViewChange(item.id)}
         >
@@ -49,16 +50,16 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex md:flex-col md:fixed md:inset-y-0 z-50 bg-white border-r border-gray-200 shadow-lg md:w-64">
-        <div className="flex flex-col flex-1 pt-5 pb-4 overflow-y-auto">
-          <div className="flex items-center flex-shrink-0 px-4">
-            <h1 className="text-xl font-bold text-blue-600">Porter Owner</h1>
-          </div>
-          <nav className="mt-8 flex-1 space-y-2 px-2">
+      <div className="hidden md:flex md:flex-col md:fixed md:inset-y-0 z-50 bg-white border-r border-gray-200 shadow-lg md:w-60">
+        <div className="flex justify-center mt-4">
+          <img src={logo} alt="e-cargo logo" style={{width:"80px", height:"30px"}}/>
+       
+           </div>
+          <nav className="mt-4 flex-1 space-y-2 px-2">
             <NavContent />
           </nav>
         </div>
-      </div>
+   
 
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
@@ -69,7 +70,7 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
               variant="ghost"
               className={cn(
                 "flex flex-col items-center py-2 px-3 min-h-[60px] flex-1",
-                activeItem === item.id ? "text-blue-600" : "text-gray-600 hover:text-blue-600",
+                activeItem === item.id ? "text-green-600" : "text-gray-600 hover:text-green-600",
                 "hover:bg-transparent"
               )}
               onClick={() => onViewChange(item.id)}

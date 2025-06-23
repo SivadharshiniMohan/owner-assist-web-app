@@ -1,5 +1,10 @@
 
 import { ENV } from '@/config/env';
+interface UserData {
+  phoneNumber: string;
+  name: string;
+  oaId: number;
+}
 
 class ApiService {
   private baseURL = ENV.API_BASE_URL;
@@ -10,7 +15,7 @@ class ApiService {
     
     const config: RequestInit = {
       headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
+        // ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
@@ -40,9 +45,9 @@ class ApiService {
     });
     
     if (response.data.oaId) {
+       this.setUserData(response.data);
       this.setAuthToken(response.data.oaId);
       localStorage.setItem('oaId', response?.data.oaId.toString());
-      console.log('Login successful, OA ID:', response.data.oaId);
     }
     
     return response;
@@ -73,6 +78,10 @@ class ApiService {
     return this.request<any>(`/v2/driver/walletBalance?id=${id}`);
   }
 
+      async getDriverstats(id: number) {
+    return this.request<any>(`/v2/driver/stats?id=${id}`);
+  }
+
   // Token management
   setAuthToken(token: number) {
     const expiryDate = new Date();
@@ -83,8 +92,21 @@ class ApiService {
       expiry: expiryDate.toISOString(),
     };
     
-    // localStorage.setItem('auth_token', token);
-    // localStorage.setItem('auth_token', JSON.stringify(token));
+  
+    localStorage.setItem('auth_token', JSON.stringify(tokenData));
+
+  }
+    setUserData(res: any) {
+    
+   
+    
+    const user = {
+      name: res.name  ,
+      phonenumeber: res.phoneNumber,
+    };
+    
+  
+    localStorage.setItem('userData', JSON.stringify(user));
 
   }
 

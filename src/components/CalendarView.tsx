@@ -73,7 +73,7 @@ const CalendarView = ({ onBack }: CalendarViewProps) => {
               variant="ghost"
               size="icon"
               onClick={onBack}
-              className="text-gray-600 hover:text-blue-600"
+              className="text-gray-600 hover:text-green-600"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -145,8 +145,8 @@ const CalendarView = ({ onBack }: CalendarViewProps) => {
                       className={`
                         h-10 w-10 text-sm rounded-lg flex items-center justify-center transition-colors
                         ${!isCurrentMonth ? 'text-gray-300' : ''}
-                        ${isSelected ? 'bg-blue-600 text-white' : ''}
-                        ${isTodayDate && !isSelected ? 'bg-blue-100 text-blue-600 font-semibold' : ''}
+                        ${isSelected ? 'bg-green-600 text-white' : ''}
+                        ${isTodayDate && !isSelected ? 'bg-green-100 text-green-600 font-semibold' : ''}
                         ${hasEarnings && !isSelected && !isTodayDate && isCurrentMonth ? 'bg-green-100 text-green-600' : ''}
                         ${!hasEarnings && !isSelected && !isTodayDate && isCurrentMonth ? 'hover:bg-gray-100' : ''}
                         ${isCurrentMonth ? 'text-gray-900' : ''}
@@ -166,7 +166,7 @@ const CalendarView = ({ onBack }: CalendarViewProps) => {
                     setCurrentMonth(new Date());
                     setSelectedDate(undefined);
                   }}
-                  className="text-blue-600"
+                  className="text-green-600"
                 >
                   Clear
                 </Button>
@@ -176,7 +176,7 @@ const CalendarView = ({ onBack }: CalendarViewProps) => {
                     setCurrentMonth(today);
                     setSelectedDate(today);
                   }}
-                  className="bg-blue-600 text-white hover:bg-blue-700"
+                  className="bg-green-600 text-white hover:bg-green-700"
                 >
                   Today
                 </Button>

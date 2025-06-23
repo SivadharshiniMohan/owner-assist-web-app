@@ -37,6 +37,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
           title: "Login Successful",
           description: "Welcome back!",
           variant: "default",
+            duration: 2000,
         });
         onLogin();
       } else {
@@ -44,6 +45,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
           title: "Login Failed",
           description: response.message || "Invalid credentials",
           variant: "destructive",
+            duration: 2000
         });
       }
     } catch (error) {
@@ -51,6 +53,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
         title: "Login Error",
         description: "Please check your credentials and try again",
         variant: "destructive",
+          duration: 2000
       });
     } finally {
       setIsLoading(false);
@@ -98,7 +101,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
       <Card className="w-full max-w-md">
         <CardContent className="p-6">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Porter Owner</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to E-Cargo</h1>
             <p className="text-gray-600">Sign in to continue</p>
           </div>
 
