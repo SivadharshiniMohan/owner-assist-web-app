@@ -144,7 +144,7 @@ const OTPVerificationPage = ({ phoneNumber, onVerified }: OTPVerificationPagePro
                 value={otp}
                 onChange={(value) => setOtp(value)}
               >
-                <InputOTPGroup>
+                <InputOTPGroup className="gap-5">
                   <InputOTPSlot index={0} className="w-12 h-12 border-2 border-green-500 rounded-lg" />
                   <InputOTPSlot index={1} className="w-12 h-12 border-2 border-gray-300 rounded-lg" />
                   <InputOTPSlot index={2} className="w-12 h-12 border-2 border-gray-300 rounded-lg" />

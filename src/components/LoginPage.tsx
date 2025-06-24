@@ -26,7 +26,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
 
   const handleLogin = async () => {
     if (phoneNumber.length !== 10 || password.length === 0) return;
-    onLogin();
+  
     setIsLoading(true);
     
     try {
@@ -101,7 +101,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
       <Card className="w-full max-w-md">
         <CardContent className="p-6">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Porter Owner</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to e-cargo Owner</h1>
             <p className="text-gray-600">Sign in to continue</p>
           </div>
 

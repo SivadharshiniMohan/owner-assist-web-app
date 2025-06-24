@@ -119,6 +119,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
               }`}
               onClick={() => setActiveTab("onTrip")}
+              disabled={vehicles.filter(v => v.status === 'ontrip').length === 0}
             >
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               <span>On Trip ({vehicles.filter(v => v.status === 'ontrip').length})</span>
@@ -131,6 +132,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
               }`}
               onClick={() => setActiveTab("online")}
+              disabled={vehicles.filter(v => v.status === 'online').length === 0}
             >
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span>Online ({vehicles.filter(v => v.status === 'online').length})</span>
@@ -143,6 +145,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                   : "text-gray-600 border-gray-300 hover:bg-gray-50"
               }`}
               onClick={() => setActiveTab("offline")}
+              disabled={vehicles.filter(v => v.status === 'offline').length === 0}
             >
               <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
               <span>Offline ({vehicles.filter(v => v.status === 'offline').length})</span>

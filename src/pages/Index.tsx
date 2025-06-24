@@ -31,7 +31,13 @@ const Index = () => {
   const [showCalendar, setShowCalendar] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const oaId= localStorage.getItem("oaId");
+const [oaId, setOaId] = useState<string | null>(null);
+
+useEffect(() => {
+  const storedOaId = localStorage.getItem("oaId");
+  setOaId(storedOaId);
+}, [isLoggedIn]);
+
   // Check authentication status on component mount
   useEffect(() => {
     const isAuthenticated = apiService.isAuthenticated();
