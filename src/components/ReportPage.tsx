@@ -25,6 +25,16 @@ interface DriverSummary {
   totalDistance: number;
 }
 
+// API response interface to match actual response
+interface ApiDriverSummary {
+  DRIVER_AUTO_ID: number;
+  driver_name: string;
+  driver_number: string;
+  total_trips: number;
+  total_amount: number;
+  total_distance: number;
+}
+
 const ReportPage = ({ onBack }: ReportPageProps) => {
   const [startDate, setStartDate] = useState<Date>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date>(new Date());
@@ -58,7 +68,18 @@ const ReportPage = ({ onBack }: ReportPageProps) => {
       }
       
       const data = await response.json();
-      return data.data || [];
+      
+      // Map API response to our interface
+      const mappedData: DriverSummary[] = (data.data || []).map((item: ApiDriverSummary) => ({
+        driverId: item.DRIVER_AUTO_ID,
+        driverName: item.driver_name,
+        phoneNumber: item.driver_number,
+        totalTrips: item.total_trips,
+        amountEarned: item.total_amount,
+        totalDistance: item.total_distance
+      }));
+      
+      return mappedData;
     },
     enabled: !!startDate && !!endDate,
   });
@@ -280,7 +301,7 @@ const ReportPage = ({ onBack }: ReportPageProps) => {
                           <TableCell className="font-medium">{driver.driverName}</TableCell>
                           <TableCell>{driver.phoneNumber}</TableCell>
                           <TableCell className="text-right">{driver.totalTrips}</TableCell>
-                          <TableCell className="text-right">₹ {driver.amountEarned.toLocaleString()}</TableCell>
+                          <TableCell className="text-right">₹ {driver.amountEarned?.toLocaleString() || 0}</TableCell>
                           <TableCell className="text-right">{driver.totalDistance}</TableCell>
                         </TableRow>
                       ))
