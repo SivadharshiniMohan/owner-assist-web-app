@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,36 +24,29 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
   const { toast } = useToast();
 
   const handleLogin = async () => {
-    if (phoneNumber.length !== 10 || password.length === 0) return;
-    
     setIsLoading(true);
     
-    try {
-      const response = await apiService.login(phoneNumber, password);
+    // Simulate loading for better UX
+    setTimeout(() => {
+      // Set dummy user data in localStorage
+      const dummyUserData = {
+        phoneNumber: phoneNumber || "1234567890",
+        name: "Test User",
+        oaId: 13
+      };
       
-      if (response.token || response.success) {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back!",
-          variant: "default",
-        });
-        onLogin();
-      } else {
-        toast({
-          title: "Login Failed",
-          description: response.message || "Invalid credentials",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+      apiService.setUserData(dummyUserData);
+      apiService.setAuthToken('dummy_token');
+      
       toast({
-        title: "Login Error",
-        description: "Please check your credentials and try again",
-        variant: "destructive",
+        title: "Login Successful",
+        description: "Welcome back!",
+        variant: "default",
       });
-    } finally {
+      
       setIsLoading(false);
-    }
+      onLogin();
+    }, 1000);
   };
 
   const handleForgotPasswordContinue = async (phone: string, isNewUser: boolean) => {
@@ -157,7 +149,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
             <Button 
               onClick={handleLogin}
               className="w-full bg-green-600 hover:bg-green-700"
-              disabled={phoneNumber.length !== 10 || password.length === 0 || isLoading}
+              disabled={isLoading}
             >
               {isLoading ? "Logging in..." : "Login"}
             </Button>

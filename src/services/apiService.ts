@@ -1,4 +1,3 @@
-
 import { ENV } from '@/config/env';
 
 interface UserData {
@@ -67,6 +66,20 @@ class ApiService {
     });
   }
 
+  // User data API call
+  async getUserDataFromAPI(oaId: number) {
+    const formData = new URLSearchParams();
+    formData.append('oaId', oaId.toString());
+
+    return this.request<any>('/v2/oa/getUserData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
+  }
+
   // Fleet methods
   async getFleetStatus(oaId: number) {
     const formData = new URLSearchParams();
@@ -122,6 +135,18 @@ class ApiService {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: formData.toString(),
+    });
+  }
+
+  // Driver summary for reports
+  async getDriverSummary(startDate: string, endDate: string, oaId: number) {
+    const params = new URLSearchParams();
+    params.append('startDate', startDate);
+    params.append('endDate', endDate);
+    params.append('oaId', oaId.toString());
+
+    return this.request<any>(`/v2/oa/driverSummary?${params.toString()}`, {
+      method: 'GET',
     });
   }
 
