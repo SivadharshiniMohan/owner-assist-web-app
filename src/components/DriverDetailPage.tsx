@@ -121,9 +121,9 @@ const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPagePro
                   <div className="text-2xl font-bold">₹{walletBalance}</div>
                   <div className="text-sm text-gray-300">Ledger Balance</div>
                 </div>
-                {/* <div className="text-gray-400 hover:text-white transition-colors">
+                <div className="text-gray-400 hover:text-white transition-colors" onClick={onViewLedger}>
                   →
-                </div> */}
+                </div>
               </div>
               {/* <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
                 <span className="text-sm text-gray-300">Ledger Activity</span>
@@ -143,7 +143,7 @@ const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPagePro
             {/* Updated Earnings Card - Made clickable */}
             <Card 
               className="bg-green-600 text-white rounded-2xl shadow-lg flex-1 relative overflow-hidden cursor-pointer hover:bg-green-700 transition-colors"
-              onClick={onViewLedger}
+              
             >
               <CardContent className="p-6 relative">
                 <div className="text-2xl font-bold mb-1">{vehicle.earnings}</div>

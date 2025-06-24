@@ -110,15 +110,7 @@ const resetPasswordMutation = useMutation({
               {resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}
             </Button>
 
-            <div className="text-center pt-4">
-              <span className="text-gray-600">Already have an account? </span>
-              <button 
-                onClick={onSuccess}
-                className="text-green-600 font-medium hover:text-green-700"
-              >
-                Sign In
-              </button>
-            </div>
+            
           </div>
         </CardContent>
       </Card>

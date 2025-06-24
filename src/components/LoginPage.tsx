@@ -141,7 +141,11 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
             
             <div className="text-right">
               <button 
-                onClick={() => setCurrentView("forgot")}
+                onClick={() => {
+      setPhoneNumber("");
+      setPassword("");
+      setCurrentView("forgot");
+    }}
                 className="text-sm text-green-600 hover:text-green-700"
               >
                 Forgot Password?

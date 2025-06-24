@@ -10,6 +10,8 @@ import DriverDetailPage from "@/components/DriverDetailPage";
 import ProfilePage from "@/components/ProfilePage";
 import LoginPage from "@/components/LoginPage";
 import CalendarView from "@/components/CalendarView";
+import ReportPage from "@/components/ReportPage";
+
 import LedgerPage from "@/components/LedgerPage";
 import { format } from "date-fns";
 import Header from "@/components/Header";
@@ -25,7 +27,6 @@ interface Vehicle {
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  console.log("isLoggedIn", isLoggedIn);
   const [currentView, setCurrentView] = useState("dashboard");
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -75,8 +76,6 @@ const { data: earningsData = [] } = useQuery({
   enabled: isLoggedIn && !!oaId, // ensure oaId is available and user is logged in
 });
 
-
-console.log("log....",earningsData)
 const totalEarnings = earningsData.reduce((sum: number, vehicle: Vehicle) => {
   const earning = parseFloat(String(vehicle.earnings).replace(/[^\d.-]/g, "")) || 0;
   return sum + earning;
@@ -257,6 +256,13 @@ const totalEarnings = earningsData.reduce((sum: number, vehicle: Vehicle) => {
         );
       case "profile":
         return <ProfilePage />;
+       case "report":
+        return (
+          <>
+            <Header />
+            <ReportPage onBack={() => setCurrentView("dashboard")} />
+          </>
+        );
       case "vehicle":
         return selectedVehicle ? (
           <DriverDetailPage 

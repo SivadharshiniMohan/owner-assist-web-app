@@ -82,6 +82,23 @@ class ApiService {
     return this.request<any>(`/v2/driver/stats?id=${id}`);
   }
 
+
+    // User data API call
+  async getUserDataFromAPI(oaId: number) {
+    const formData = new URLSearchParams();
+    formData.append('oaId', oaId.toString());
+
+    return this.request<any>('/v2/oa/getUserData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
+  }
+
+
+
   // Token management
   setAuthToken(token: number) {
     const expiryDate = new Date();

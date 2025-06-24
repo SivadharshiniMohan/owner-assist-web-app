@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home, Truck, User, Menu, X } from "lucide-react";
+import { Home, Truck, User, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logo from "./../../public/e-cargo-logo.png"
 
@@ -15,6 +15,7 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
   const navItems = [
     { id: "dashboard", label: "Home", icon: Home },
     { id: "fleet", label: "My Fleet", icon: Truck },
+        { id: "report", label: "Report", icon: FileText },
     { id: "profile", label: "Profile", icon: User },
   ];
 
