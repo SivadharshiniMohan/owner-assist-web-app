@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, ChevronRight } from "lucide-react";
@@ -11,6 +10,7 @@ import ProfilePage from "@/components/ProfilePage";
 import LoginPage from "@/components/LoginPage";
 import CalendarView from "@/components/CalendarView";
 import LedgerPage from "@/components/LedgerPage";
+import ReportPage from "@/components/ReportPage";
 import RevenueChart from "@/components/RevenueChart";
 import Header from "@/components/Header";
 import { format } from "date-fns";
@@ -252,6 +252,13 @@ const Index = () => {
           <>
             <Header />
             <ProfilePage />
+          </>
+        );
+      case "report":
+        return (
+          <>
+            <Header />
+            <ReportPage onBack={() => setCurrentView("dashboard")} />
           </>
         );
       case "vehicle":
