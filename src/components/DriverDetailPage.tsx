@@ -16,9 +16,14 @@ interface DriverDetailPageProps {
   vehicle: Vehicle;
   onBack: () => void;
   onViewLedger: () => void;
+  onViewTripDetails: (driverID: number, driverName: string) => void;
 }
 
-const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPageProps) => {
+const DriverDetailPage = ({ vehicle, onBack, onViewLedger, onViewTripDetails }: DriverDetailPageProps) => {
+  const handleEarningsClick = () => {
+    onViewTripDetails(vehicle.id, vehicle.driverName);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-4">
       <div className="md:ml-64 pt-4 md:pt-0">
@@ -93,10 +98,10 @@ const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPagePro
           </div>
 
           <div className="flex gap-4">
-            {/* Updated Earnings Card - Made clickable */}
+            {/* Updated Earnings Card - Made clickable to show trip details */}
             <Card 
               className="bg-blue-600 text-white rounded-2xl shadow-lg flex-1 relative overflow-hidden cursor-pointer hover:bg-blue-700 transition-colors"
-              onClick={onViewLedger}
+              onClick={handleEarningsClick}
             >
               <CardContent className="p-6 relative">
                 <div className="text-2xl font-bold mb-1">₹2,609.00</div>
