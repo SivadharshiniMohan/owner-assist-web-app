@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, ChevronRight } from "lucide-react";
@@ -16,6 +15,7 @@ import ReportPage from "@/components/ReportPage";
 import RevenueChart from "@/components/RevenueChart";
 import Header from "@/components/Header";
 import { format } from "date-fns";
+import TripListPage from "@/components/TripListPage";
 
 interface Vehicle {
   id: number;
@@ -248,6 +248,13 @@ const Index = () => {
                 setCurrentView("vehicle");
               }} 
             />
+          </>
+        );
+      case "trips":
+        return (
+          <>
+            <Header />
+            <TripListPage onBack={() => setCurrentView("dashboard")} />
           </>
         );
       case "profile":

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home, Truck, User, FileText } from "lucide-react";
+import { Home, Truck, User, FileText, Route } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -14,6 +14,7 @@ const Sidebar = ({ currentView, onViewChange }: SidebarProps) => {
   const navItems = [
     { id: "dashboard", label: "Home", icon: Home },
     { id: "fleet", label: "My Fleet", icon: Truck },
+    { id: "trips", label: "Trips", icon: Route },
     { id: "report", label: "Report", icon: FileText },
     { id: "profile", label: "Profile", icon: User },
   ];
