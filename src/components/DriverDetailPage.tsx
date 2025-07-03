@@ -17,11 +17,12 @@ interface DriverDetailPageProps {
   onBack: () => void;
   onViewLedger: () => void;
   onViewTripDetails: (driverID: number, driverName: string) => void;
+  onViewTripList: () => void;
 }
 
-const DriverDetailPage = ({ vehicle, onBack, onViewLedger, onViewTripDetails }: DriverDetailPageProps) => {
+const DriverDetailPage = ({ vehicle, onBack, onViewLedger, onViewTripDetails, onViewTripList }: DriverDetailPageProps) => {
   const handleEarningsClick = () => {
-    onViewTripDetails(vehicle.id, vehicle.driverName);
+    onViewTripList();
   };
 
   return (
@@ -98,7 +99,7 @@ const DriverDetailPage = ({ vehicle, onBack, onViewLedger, onViewTripDetails }: 
           </div>
 
           <div className="flex gap-4">
-            {/* Updated Earnings Card - Made clickable to show trip details */}
+            {/* Updated Earnings Card - Made clickable to show trip list */}
             <Card 
               className="bg-blue-600 text-white rounded-2xl shadow-lg flex-1 relative overflow-hidden cursor-pointer hover:bg-blue-700 transition-colors"
               onClick={handleEarningsClick}

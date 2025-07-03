@@ -283,6 +283,7 @@ const Index = () => {
                 setSelectedDriverDetails({ driverID, driverName });
                 setCurrentView("tripDetails");
               }}
+              onViewTripList={() => setCurrentView("trips")}
             />
           </>
         ) : (
