@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, ChevronRight } from "lucide-react";
@@ -6,6 +7,7 @@ import { apiService } from "@/services/apiService";
 import Sidebar from "@/components/Sidebar";
 import FleetPage from "@/components/FleetPage";
 import DriverDetailPage from "@/components/DriverDetailPage";
+import TripDetailsPage from "@/components/TripDetailsPage";
 import ProfilePage from "@/components/ProfilePage";
 import LoginPage from "@/components/LoginPage";
 import CalendarView from "@/components/CalendarView";
@@ -28,6 +30,7 @@ const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null = loading
   const [currentView, setCurrentView] = useState("dashboard");
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [selectedDriverDetails, setSelectedDriverDetails] = useState<{driverID: number, driverName: string} | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -269,6 +272,23 @@ const Index = () => {
               vehicle={selectedVehicle}
               onBack={() => setCurrentView("fleet")}
               onViewLedger={() => setCurrentView("ledger")}
+              onViewTripDetails={(driverID, driverName) => {
+                setSelectedDriverDetails({ driverID, driverName });
+                setCurrentView("tripDetails");
+              }}
+            />
+          </>
+        ) : (
+          <DashboardView />
+        );
+      case "tripDetails":
+        return selectedDriverDetails ? (
+          <>
+            <Header />
+            <TripDetailsPage 
+              driverID={selectedDriverDetails.driverID}
+              driverName={selectedDriverDetails.driverName}
+              onBack={() => setCurrentView("vehicle")}
             />
           </>
         ) : (
