@@ -112,19 +112,10 @@ const TripListPage = ({ onBack }: TripListPageProps) => {
 
   const getStatusColor = (status: number) => {
     switch (status) {
-      case 4: return 'text-green-600 bg-green-50';
+      case 4: return 'text-green-700 bg-green-100';
       case 5: return 'text-red-600 bg-red-50';
       case 2: return 'text-blue-600 bg-blue-50';
       case 1: return 'text-yellow-600 bg-yellow-50';
-      default: return 'text-gray-600 bg-gray-50';
-    }
-  };
-
-  const getPaymentModeColor = (mode: number) => {
-    switch (mode) {
-      case 0: return 'text-green-600 bg-green-50';
-      case 1: return 'text-blue-600 bg-blue-50';
-      case 2: return 'text-purple-600 bg-purple-50';
       default: return 'text-gray-600 bg-gray-50';
     }
   };
@@ -177,15 +168,6 @@ const TripListPage = ({ onBack }: TripListPageProps) => {
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer hover:bg-green-100 font-semibold"
-                        onClick={() => handleSort('paymentMode')}
-                      >
-                        <div className="flex items-center gap-2">
-                          Payment Mode
-                          <ArrowUpDown className="h-4 w-4" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
                         className="text-right cursor-pointer hover:bg-green-100 font-semibold"
                         onClick={() => handleSort('fare')}
                       >
@@ -203,15 +185,12 @@ const TripListPage = ({ onBack }: TripListPageProps) => {
                           <ArrowUpDown className="h-4 w-4" />
                         </div>
                       </TableHead>
-                      <TableHead className="font-semibold">Time</TableHead>
-                      <TableHead className="font-semibold">Pickup</TableHead>
-                      <TableHead className="font-semibold">Drop</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {sortedData.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                        <TableCell colSpan={3} className="text-center py-8 text-gray-500">
                           No trips available for today
                         </TableCell>
                       </TableRow>
@@ -219,23 +198,16 @@ const TripListPage = ({ onBack }: TripListPageProps) => {
                       sortedData.map((trip) => (
                         <TableRow key={trip.tripAutoId} className="hover:bg-gray-50">
                           <TableCell className="font-medium">#{trip.tripAutoId}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentModeColor(trip.paymentMode)}`}>
-                              {getPaymentModeText(trip.paymentMode)}
-                            </span>
-                          </TableCell>
                           <TableCell className="text-right font-medium">₹ {trip.fare.toFixed(2)}</TableCell>
                           <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}>
-                              {getStatusText(trip.status)}
-                            </span>
-                          </TableCell>
-                          <TableCell>{trip.time}</TableCell>
-                          <TableCell className="max-w-xs truncate" title={trip.pickup}>
-                            {trip.pickup}
-                          </TableCell>
-                          <TableCell className="max-w-xs truncate" title={trip.drop}>
-                            {trip.drop}
+                            <div className="space-y-1">
+                              <div className={`px-3 py-1 rounded-md text-sm font-medium ${getStatusColor(trip.status)}`}>
+                                {getStatusText(trip.status)}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                Paid Via {getPaymentModeText(trip.paymentMode)}
+                              </div>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))
