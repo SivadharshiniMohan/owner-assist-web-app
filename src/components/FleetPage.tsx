@@ -204,7 +204,7 @@ const FleetPage = ({ onVehicleSelect }: FleetPageProps) => {
                         </div>
                         <p className="text-sm text-gray-500 mb-2 truncate">{vehicle.vehicleNumber}</p>
                         <div className="flex items-center justify-between mb-1">
-                        <div className="text-lg font-bold text-gray-900 mb-2">{vehicle.earnings}</div>
+                        <div className="text-lg font-bold text-gray-900 mb-2">₹{vehicle.earnings}</div>
                          <div className="ml-3 flex-shrink-0">
                       <button
                         onClick={(e) => handlePhoneClick(vehicle.phone, e)}

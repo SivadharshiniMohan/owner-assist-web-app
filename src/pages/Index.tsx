@@ -15,6 +15,7 @@ import ReportPage from "@/components/ReportPage";
 import LedgerPage from "@/components/LedgerPage";
 import { format } from "date-fns";
 import Header from "@/components/Header";
+import TripEarnings from "@/components/TripEarnings";
 
 interface Vehicle {
   id: number;
@@ -101,7 +102,7 @@ const totalEarnings = earningsData.reduce((sum: number, vehicle: Vehicle) => {
           {/* Earnings Section */}
           <div className="mb-3">
             <div className="text-sm text-gray-600 mb-1">Today's Earnings</div>
-            <div className="text-3xl font-bold text-black mb-2">{totalEarnings}</div>
+            <div className="text-3xl font-bold text-black mb-2">₹{totalEarnings}</div>
             {/* <div className="flex items-center gap-2 mb-3">
               <button 
                 onClick={() => setShowCalendar(!showCalendar)}
@@ -269,6 +270,7 @@ const totalEarnings = earningsData.reduce((sum: number, vehicle: Vehicle) => {
             vehicle={selectedVehicle}
             onBack={() => setCurrentView("fleet")}
             onViewLedger={() => setCurrentView("ledger")}
+            onViewTrips={() => setCurrentView("trips")}
           />
         ) : (
           <DashboardView />
@@ -276,7 +278,14 @@ const totalEarnings = earningsData.reduce((sum: number, vehicle: Vehicle) => {
       case "calendar":
         return <CalendarView onBack={() => setCurrentView("dashboard")} />;
       case "ledger":
-        return <LedgerPage onBack={() => setCurrentView("vehicle")} />;
+        return <LedgerPage onBack={() => setCurrentView("vehicle")} id={selectedVehicle.id}/>;
+      case "trips":
+        return (
+          <TripEarnings
+            onBack={() => setCurrentView("vehicle")}
+            id={selectedVehicle ? selectedVehicle.id : null}
+          />
+        );
       default:
         return <DashboardView />;
     }

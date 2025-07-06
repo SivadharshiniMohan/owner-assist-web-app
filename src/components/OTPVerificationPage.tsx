@@ -81,18 +81,29 @@ const OTPVerificationPage = ({ phoneNumber, onVerified }: OTPVerificationPagePro
     }
   });
 
-  const verifyOtpMutation = useMutation({
-    mutationFn: async (data: { mobile: string; otp: string }) => {
-      const response = await fetch(`https://control.msg91.com/api/v5/otp/verify?mobile=91${data.mobile}&otp=${data.otp}`, {
-        headers: { 'authkey': OTP_AUTH_KEY }
-      });
-      if (!response.ok) throw new Error('Failed to verify OTP');
-      return response.json();
-    },
-    onSuccess: () => {
+const verifyOtpMutation = useMutation({
+  mutationFn: async ({ phoneNumber, otp }: { phoneNumber: string; otp: string }) => {
+    const response = await fetch(`/v2/verifyOtp?phoneNumber=${phoneNumber}&otp=${otp}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) throw new Error('Network error');
+
+    const data = await response.json();
+    return data; // expected: { type: "success" } or { type: "error" }
+  },
+  onSuccess: (data) => {
+    if (data.type === "success") {
       onVerified();
+    } else {
+      alert("Invalid OTP");
     }
-  });
+  },
+  onError: () => {
+    alert("Something went wrong. Please try again.");
+  }
+});
+
 
   // const handleVerify = () => {
   //   if (otp.length === 4) {
@@ -100,17 +111,14 @@ const OTPVerificationPage = ({ phoneNumber, onVerified }: OTPVerificationPagePro
   //   }
   // };
 
-  const handleVerify = () => {
+const handleVerify = () => {
   if (otp.length !== 4) return;
 
   if (otp === "0000") {
-    // Skip API call and directly go to reset page
-    onVerified();
-  } 
-  // else {
-  //   // Proceed with actual OTP verification
-  //   verifyOtpMutation.mutate({ mobile: phoneNumber, otp });
-  // }
+    onVerified(); // bypass
+  } else {
+    verifyOtpMutation.mutate({ phoneNumber, otp });
+  }
 };
 
 

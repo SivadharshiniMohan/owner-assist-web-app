@@ -7,6 +7,7 @@ import { apiService } from "@/services/apiService";
 import { useEffect, useState } from "react";
 import LoginPage from "./LoginPage";
 import Header from "./Header";
+import TripListPage from "./TripEarnings";
 
 interface Vehicle {
   id: number;
@@ -24,9 +25,10 @@ interface DriverDetailPageProps {
   vehicle: Vehicle;
   onBack: () => void;
   onViewLedger: () => void;
+  onViewTrips: () => void; // Optional, if you want to add a view trips button
 }
 
-const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPageProps) => {
+const DriverDetailPage = ({ vehicle, onBack, onViewLedger,onViewTrips }: DriverDetailPageProps) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // // Check authentication status on component mount
     // useEffect(() => {
@@ -145,8 +147,8 @@ const DriverDetailPage = ({ vehicle, onBack, onViewLedger }: DriverDetailPagePro
               className="bg-green-600 text-white rounded-2xl shadow-lg flex-1 relative overflow-hidden cursor-pointer hover:bg-green-700 transition-colors"
               
             >
-              <CardContent className="p-6 relative">
-                <div className="text-2xl font-bold mb-1">{vehicle.earnings}</div>
+              <CardContent className="p-6 relative" onClick={onViewTrips}>
+                <div className="text-2xl font-bold mb-1">₹{vehicle.earnings}</div>
                 <div className="text-sm text-green-100 mb-4">Earnings</div>
                 <div className="absolute bottom-4 right-4">
                   <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">

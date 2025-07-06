@@ -5,6 +5,7 @@ import Header from "./Header";
 
 interface LedgerPageProps {
   onBack: () => void;
+  id:number;
 }
 
 interface WalletTransaction {
@@ -17,19 +18,19 @@ interface WalletTransaction {
   DRIVER_ID: number;
 }
 
-const LedgerPage = ({ onBack }: LedgerPageProps) => {
+const LedgerPage = ({ onBack,id }: LedgerPageProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const loader = useRef<HTMLDivElement | null>(null);
-
+console.log("LedgerPage component rendered",transactions);
   const fetchTransactions = async (page: number) => {
     setIsFetchingMore(true);
     try {
       const response = await fetch(
-        `https://book.ecargo.co.in/v2/driver/walletTxns?id=1&pageNo=${page}&pageSize=${pageSize}`
+        `https://book.ecargo.co.in/v2/driver/walletTxns?id=${id}&pageNo=${page}&pageSize=${pageSize}`
       );
       const data = await response.json();
       if (data.data && data.data.length > 0) {

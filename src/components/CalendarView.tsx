@@ -88,7 +88,7 @@ const CalendarView = ({ onBack }: CalendarViewProps) => {
                   {selectedDate ? format(selectedDate, "EEEE, dd MMM yyyy") : "Select a date"}
                 </div>
                 <div className="text-3xl font-bold text-green-600">
-                  {getEarningsForDate(selectedDate)}
+                  ₹{getEarningsForDate(selectedDate)}
                 </div>
                 <div className="text-sm text-gray-500 mt-1">Total Earnings</div>
               </div>
